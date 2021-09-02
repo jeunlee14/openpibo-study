@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>Flask_server_PIBO</title>
+  </head>
+  <body>
+    <h3 style='color: #ccc;font-size: 30px;'>모터 값 입력?</h3>
+
+    
+    <form action="" method="POST">
+
+      모터입력 : 
+      <input type="text" class="number" style='font-size:15px;' placeholder="number"/>
+      <input type="text" class="degree" style='font-size:15px;' placeholder="degree"/>
+      <input type="text" class="speed" style='font-size:15px;' placeholder="speed"/>
+      <input type="text" class="accel" style='font-size:15px;' placeholder="accel"/>
+      <input type="submit" value="전송"/> <br><br>
+
+      number(0~9), degree[25,35,80,30,50,25,25,35,80,30], speed(0~255), accel(0~255) 
+    </form>
+    <div class="message_holder"></div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script>
+      
+      var socket = io.connect('http://' + '192.168.1.87' + ':' + location.port);
+
+      socket.on( 'connect', function() {
+        socket.emit( 'moter', {
+          data: 'No signal'
+        } )
+        
+        var form = $( 'form' ).on( 'submit', function( e ) {
+          e.preventDefault()
+          let number = $( 'input.number' ).val()
+          let degree = $( 'input.degree' ).val()
+          let speed = $( 'input.speed' ).val()
+          let accel = $( 'input.accel' ).val()
+
+          socket.emit( 'moter', {
+            number : number,
+            degree : degree,
+            speed : speed,
+            accel : accel
+          } )
+          $( 'input.message' ).val( '' ).focus()
+        } )
+      } )
+
+      socket.on( 'my response', function( msg ) {
+        console.log( msg )
+        $( 'div.message_holder' ).append( '<div><b>'+ msg.number+'</b> '+msg.degree+'</b>' +msg.speed+'</b>'+msg.accel+'</div>' )
+        
+      })
+    </script>
+
+
+  </body>
+  </html>

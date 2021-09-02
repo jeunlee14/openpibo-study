@@ -26,7 +26,7 @@ socketio = SocketIO(app)
 pibo = Edu_Pibo()
 m = cMotion(conf=cfg)
 
-img_path = '/home/pi/openpibo-study/data/images/capture.png'
+img_path = '/home/pi/openpibo-study/flask/web-server/data/images/capture.png'
 
 
 @app.route('/')
@@ -67,8 +67,8 @@ def capture_test():
 def image_test():
     img = cv2.imread(img_path)
     img_crop = cv2.resize(img, dsize=(128,64))
-    cv2.imwrite("/home/pi/openpibo-study/data/images/crop_img.png", img_crop)
-    ret=pibo.draw_image("/home/pi/openpibo-study/data/images/crop_img.png")
+    cv2.imwrite("/home/pi/openpibo-study/flask/web-server/data/images/crop_img.png", img_crop)
+    ret=pibo.draw_image("/home/pi/openpibo-study/flask/web-server/data/images/crop_img.png")
     print(ret)
     pibo.show_display()
     time.sleep(2)
