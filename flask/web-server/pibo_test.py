@@ -121,7 +121,7 @@ def move():
 def handle_my_custom_event(json, methods=['GET', 'POST']):
     print('received my event: ' + str(json))
     
-    data = json.get('message')
+    data = str(json.get('message'))
     if 'capture' in data:
         capture_test()
 
