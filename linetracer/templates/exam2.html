@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>Flask_server_PIBO</title>
+  </head>
+  <body>
+    <h3 style='color: #ccc;font-size: 30px;'>무엇을 도와드릴까요?</h3>
+
+    <div class="message_holder"></div>
+    <form action="" method="POST">
+      <!-- <input type="text" class="username" style='font-size:15px;' placeholder="User Name"/> -->
+      메세지 보내기 : <input type="text" class="message" style='font-size:15px;' placeholder="Messages"/>
+      <input type="submit" value="전송"/> <br><br>
+    </form>
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 사진 찍기 :  <button id="capture" value="찰칵">사진찍기</button>  <br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 사진 보기 :  <button id="show" value="보기">사진보기</button>  <br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 움직이기 :  <button id="move" value="모션">움직이기</button>  <br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 모션 초기화:  <button id="reset" value="모션">초기화</button>  <br><br>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script>
+      
+      var socket = io.connect('http://' + '192.168.1.87' + ':' + location.port);
+
+      socket.on( 'connect', function() {
+
+        $('form').on('submit', function( e ) {
+          e.preventDefault()
+          let user_input = $( 'input.message' ).val()
+          socket.emit( 'my event', { message : user_input } )
+          
+          $( 'input.message' ).val( '' ).focus()
+        } )
+
+
+        $('#capture').click(() => {
+          socket.emit( 'my event', { message : 'capture' } )
+        })
+
+
+        $('#show').click(() => {
+          socket.emit( 'my event', { message : 'show' } )
+        })
+
+        $('#move').click(() => {
+          socket.emit( 'my event', { message : 'move' } )
+        })
+
+        $('#reset').click(() => {
+          socket.emit( 'my event', { message : 'reset' } )
+        })
+      } )
+
+
+    </script>
+
+  </body>
+  </html>

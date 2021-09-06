@@ -99,12 +99,16 @@ def move_value(n, degree, speed, accel):
 
 def move():
     move_value(2, 30, 100, 10)
-    move_value(8, 30,  10, 10)
-    time.sleep(1)
+    time.sleep(5)
+
+    move_value(8, 30, 100, 10)
+    time.sleep(5)
 
     move_value(2, -30, 100, 10)
-    move_value(8, -30,  10, 10)
-    time.sleep(1)
+    time.sleep(5)
+
+    move_value(8, -30, 100, 10)
+    time.sleep(5)
 
     # for i in range(10):
     # motion_obj.set_speed(i, 30)
