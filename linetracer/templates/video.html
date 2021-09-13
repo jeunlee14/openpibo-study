@@ -1,0 +1,43 @@
+<html>
+<head>
+	<title>PIBO CAMERA</title>
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>  <!-- js 확장자로 된 JS 내용 담은 외부 문서  -->
+</head>
+<body>
+<from>
+	<h1>PIBO CAMERA</h1>
+	<img src="{{ url_for('video_show') }}">	<!--이미지를 변경하기위해 파라미터로 전달-->
+	<br>
+	<img src="{{ url_for('video_gray') }}">
+	
+	<br>
+	<br>
+	<button id="video_show">show</button>
+	<button id="video_gray">gray</button>
+
+	<script>
+		$( '#video_show' ).click(function() {
+			$.get( 'video_show')
+			.done(function( data ) {
+				if(data == '1'){
+					alert('Success!');		//경고창 띄우기
+				}else{
+					alert('Fail!');
+				}
+			});
+		});
+
+		$( '#video_gray' ).click(function() {
+			$.get( 'video_gray')
+			.done(function( data ) {
+				if(data == '1'){
+					alert('Success!');
+				}else{
+					alert('Fail!');
+				}
+			});
+		});
+	</script>
+</from>	
+</body>
+</html>

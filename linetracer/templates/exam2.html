@@ -35,7 +35,7 @@
         } )
 
 
-        $('#capture').click(() => {
+        $('#capture').click(() => {   // id 호출 시 #을 사용
           socket.emit( 'my event', { message : 'capture' } )
         })
 

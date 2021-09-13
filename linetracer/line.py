@@ -229,7 +229,7 @@ if __name__ == '__main__':
   # image_test()
   # forward()
 
-  cMotion.set_motion("forward1", 1)
+  # cMotion.set_motion("forward1", 1)
   text_test("시작합니다.")
   socketio.run(app, host='192.168.1.87', port=8888, debug=False)
   
