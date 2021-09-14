@@ -47,7 +47,7 @@ class Camera(object):
             time.sleep(2)
 
             stream = io.BytesIO()
-            print("스트리이임", type(stream))
+            # print("스트리이임", type(stream))
             for foo in camera.capture_continuous(stream, 'jpeg',
                                                  use_video_port=True):
                 stream.seek(0)

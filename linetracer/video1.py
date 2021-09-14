@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-   return render_template('video.html')
+   return render_template('video1.html')
 
 def gen(camera):
    while True:
