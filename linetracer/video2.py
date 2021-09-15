@@ -5,78 +5,146 @@ import os, sys
 import numpy as np
 from threading import Thread
 
-global capture,rec_frame, grey, switch, neg, face, rec, out 
-capture=0
-grey=0
-neg=0
-face=0
-switch=1
-rec=0
-mode = 0
+# 상위 디렉토리 추가 (for utils.config)
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from utils.config import Config as cfg
 
-#instatiate flask app
-app = Flask(__name__, template_folder='./templates')
+sys.path.append(cfg.OPENPIBO_PATH + '/edu')
+
+#from pibo_control import Pibo_Control
+from pibo import Edu_Pibo
+
+global capture, grey, switch, neg, line, res, hsv
+capture, grey, neg, line, hsv, switch = 0,0,0,0,0,1
+
+# W_View_size = 320
+# H_View_size = 240
+# FPS = 80
+
+# HSV
+# lower_yellow = np.array([10, 88, 215])
+# upper_yellow = np.array([33, 255, 255])
+
+# YCbCr
+lower_yellow = np.array([0, 0, 0])
+upper_yellow = np.array([255, 255, 93])
+
+filename = cfg.TESTDATA_PATH+'/tts.mp3'
+
+app = Flask(__name__)
+pibo = Edu_Pibo()
 
 camera = cv2.VideoCapture(0)
 
-def record(out):
-    global rec_frame
-    while(rec):
-        time.sleep(0.05)
-        out.write(rec_frame)
+# camera.set(3,W_View_size)
+# camera.set(4,H_View_size)
+# camera.set(5,FPS)
 
-def detect_face(frame):
-    global net
-    (h, w) = frame.shape[:2]
-    blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
-        (300, 300), (104.0, 177.0, 123.0))   
-    net.setInput(blob)
-    detections = net.forward()
-    confidence = detections[0, 0, 0, 2]
+print('Frame width:', int(camera.get(cv2.CAP_PROP_FRAME_WIDTH)))
+print('Frame height:', int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+print('Frame Fps:', int(camera.get(cv2.CAP_PROP_FPS)))
 
-    if confidence < 0.5:            
-            return frame           
+def text_test(msg):
+    
+    ret = pibo.draw_text((10,10), msg, 15)
+    # print("msg출력", ret)
+    pibo.show_display()
+    time.sleep(2)
+    pibo.clear_display()
 
-    box = detections[0, 0, 0, 3:7] * np.array([w, h, w, h])
-    (startX, startY, endX, endY) = box.astype("int")
-    try:
-        frame=frame[startY:endY, startX:endX]
-        (h, w) = frame.shape[:2]
-        r = 480 / float(h)
-        dim = ( int(w * r), 480)
-        frame=cv2.resize(frame,dim)
-    except Exception as e:
-        pass
+def detect_line(frame):
+
+    # pibo.motor(5, 25, 100, 10)
+    
+    res = 129
+    blur = cv2.GaussianBlur(frame, (3, 3), 0)
+    # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    ycbcr = cv2.cvtColor(frame, cv2.COLOR_BGR2YCR_CB)
+    mask_yellow = cv2.inRange(ycbcr, lower_yellow, upper_yellow)
+    kernel = np.ones((5, 5), np.uint8)
+    binary_line_dil = cv2.dilate(mask_yellow, kernel, iterations=2)
+
+    pixels = cv2.countNonZero(mask_yellow)
+    #print(pixels)
+
+    if pixels < 500:
+        return frame
+
+    contours, hierarchy = cv2.findContours(binary_line_dil, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    max_contour = None
+    max_area = -1
+
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        if area > max_area:
+            max_area = area
+            max_contour = contour
+
+    if len(max_contour) <= 0:
+        return frame
+
+    yellowbox = cv2.minAreaRect(max_contour)
+    (x, y), (w, h), ang = yellowbox
+
+    if w > h:
+        ang = ang + 90
+
+    ang = int(ang)
+    box = cv2.boxPoints(yellowbox)
+    box = np.int0(box)
+    
+    print('w= {}, h={}'.format(w, h))
+    # print('x= {}, y={}'.format(x, y))
+    # print('angle={}'.format(ang))
+    # print('x-w/2 ={}, y-h/2={}'.format(x-w/2, y-h/2))
+
+    if w < 80 or h < 80 :
+        line = "straight line"
+    
+    else:
+        line = "corner"
+
+    cv2.circle(frame, (int(x), int(y)), 3, (255, 0, 0), 10)
+    # cv2.circle(frame, (int(x-w/2), int(y-h/2)), 3, (0, 0, 255), 10)
+    cv2.drawContours(frame, [box], 0, (0, 0, 255), 3)
+    # pibo.putText(frame, line, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+    pibo.camera.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), size=0.5)
+    # cv2.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255))
+    # cv2.putText(frame, str(ang), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+    # cv2.putText(img, line, p, cv2.FONT_HERSHEY_SIMPLEX, size, color, tickness)
     return frame
 
 def gen_frames():  # generate frame by frame from camera
-    global out, capture,rec_frame
+    global capture
     while True:
+
         success, frame = camera.read()
-        frame =  cv2.rotate(frame, cv2.ROTATE_180)
+        # frame = cv2.flip(frame, 1) # 1은 좌우 반전, 0은 상하 반전
+
         if success:
-            if(face):                
-                frame= detect_face(frame)
+            
+            if(line):                
+                frame = detect_line(frame)
+
             if(grey):
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
             if(neg):
-                frame=cv2.bitwise_not(frame)    
+                frame=cv2.bitwise_not(frame) 
+
             if(capture):
                 capture=0
                 now = datetime.datetime.now()
-                p = os.path.sep.join(['shots', "shot_{}.png".format(str(now).replace(":",''))])
+                p = os.path.sep.join(['data/capture', "shots_{}.png".format(str(now).replace(":",''))])
                 cv2.imwrite(p, frame)
-            
-            if(rec):
-                rec_frame=frame
-                frame= cv2.putText(cv2.flip(frame,1),"Recording...", (0,25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255),4)
-                frame=cv2.flip(frame,1)
-            
             try:
+                # byte로 encode
                 ret, buffer = cv2.imencode('.jpg', cv2.flip(frame,1))
                 frame = buffer.tobytes()
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
             except Exception as e:
                 pass
                 
@@ -95,6 +163,7 @@ def video_feed():
 @app.route('/requests',methods=['POST','GET'])
 def tasks():
     global switch,camera
+
     if request.method == 'POST':
         if request.form.get('click') == 'Capture':
             global capture
@@ -105,11 +174,40 @@ def tasks():
         elif  request.form.get('neg') == 'Negative':
             global neg
             neg=not neg
-        elif  request.form.get('face') == 'Face Only':
-            global face
-            face=not face 
-            if(face):
-                time.sleep(4)   
+        elif  request.form.get('line') == 'Linetracing':
+            global line
+            
+            if line == 0:
+                line = 1
+
+                ret=pibo.draw_image("/home/pi/openpibo-study/linetracer/data/text/start.png")
+                print(ret)
+                pibo.show_display()
+                time.sleep(2)
+                pibo.clear_display()
+               
+                ret = pibo.set_motion('start_je', 1)
+                print(ret)
+                ret = pibo.eye_on('yellow','white')
+                time.sleep(1)
+                ret = pibo.eye_on('white','yellow')
+                time.sleep(1)
+            else:
+                line = 0
+                
+                ret=pibo.draw_image("/home/pi/openpibo-study/linetracer/data/text/end.png")
+                print(ret)
+                pibo.show_display()
+                time.sleep(2)
+                pibo.clear_display()
+
+                ret = pibo.eye_on('white','white')
+                ret = pibo.set_motion('init_je', 1)
+                print(ret)
+
+            # if(line):
+            #     time.sleep(1)
+
         elif  request.form.get('stop') == 'Stop/Start':
             
             if(switch==1):
@@ -119,24 +217,18 @@ def tasks():
                 
             else:
                 camera = cv2.VideoCapture(0)
+                # camera.set(3,W_View_size)
+                # camera.set(4,H_View_size)
+                # camera.set(5,FPS)
                 switch=1
-        elif  request.form.get('rec') == 'Start/Stop Recording':
-            global rec, out
-            rec= not rec
-            if(rec):
-                now=datetime.datetime.now() 
-                fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                out = cv2.VideoWriter('vid_{}.avi'.format(str(now).replace(":",'')), fourcc, 20.0, (640, 480))
-                #Start new thread for recording the video
-                thread = Thread(target = record, args=[out,])
-                thread.start()
-            elif(rec==False):
-                out.release()
-                          
-                 
-    elif request.method=='GET':
-        return render_template('video2.html')
+
     return render_template('video2.html')
 
 if (__name__ == '__main__'):
+    ret = pibo.eye_on('white','white')
+    # ret = pibo.set_motion('init_je', 1)
+    ret = pibo.set_motion('left', 1)
+    #ret = pibo.set_motion('walk_je2', 5)
+    print(ret)
+
     app.run(host='192.168.1.87')
