@@ -5,6 +5,23 @@
   <title>OPENPIBO-HOME</title>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8  offset-lg-2">
+                <h2 class="mt-5"> PIBO PROJECT </h2>
+                <form method="post" action="{{ url_for('tasks') }}">
+                <input type="submit" value="Stop/Start" name="stop" />
+                <input type="submit" value="Capture" name="click"/>
+                <input type="submit" value="Grey" name="grey" />
+                <input type="submit" value="Negative" name="neg" />
+                <input type="submit" value="Linetracing" name="line" />
+                </form>
+                <img src="{{ url_for('gen_frames') }}">
+            </div>
+        </div>
+    </div>
+</body>
   <script>
     $(function(){
       var socket = io();

@@ -5,6 +5,7 @@ import os, sys
 import numpy as np
 from threading import Thread
 
+
 # 상위 디렉토리 추가 (for utils.config)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utils.config import Config as cfg
@@ -14,7 +15,7 @@ sys.path.append(cfg.OPENPIBO_PATH + '/edu')
 #from pibo_control import Pibo_Control
 from pibo import Edu_Pibo
 
-global capture, grey, switch, neg, line, res, hsv
+global capture, grey, switch, neg, line, res, hsv, check
 capture, grey, neg, line, hsv, switch = 0,0,0,0,0,1
 
 # W_View_size = 320
@@ -53,6 +54,8 @@ def text_test(msg):
     pibo.clear_display()
 
 def detect_line(frame):
+
+    frame = frame[300:480, 100:500]
 
     # pibo.motor(5, 25, 100, 10)
     
@@ -94,29 +97,42 @@ def detect_line(frame):
     box = cv2.boxPoints(yellowbox)
     box = np.int0(box)
     
-    print('w= {}, h={}'.format(w, h))
+    #print('w= {}, h={}'.format(w, h))
     # print('x= {}, y={}'.format(x, y))
     # print('angle={}'.format(ang))
     # print('x-w/2 ={}, y-h/2={}'.format(x-w/2, y-h/2))
 
+    print("8080808080808")
+
     if w < 80 or h < 80 :
         line = "straight line"
-    
+        
+        print("A")
+        ret = pibo.set_motion('walk_je2', 5)
+        print("B")
+        
     else:
         line = "corner"
+        #ret = pibo.set_motion('init_je', 1)
 
     cv2.circle(frame, (int(x), int(y)), 3, (255, 0, 0), 10)
     # cv2.circle(frame, (int(x-w/2), int(y-h/2)), 3, (0, 0, 255), 10)
     cv2.drawContours(frame, [box], 0, (0, 0, 255), 3)
+
     # pibo.putText(frame, line, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-    pibo.camera.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), size=0.5)
-    # cv2.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255))
-    # cv2.putText(frame, str(ang), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-    # cv2.putText(img, line, p, cv2.FONT_HERSHEY_SIMPLEX, size, color, tickness)
+    # pibo.camera.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), size=0.5)
+    # cv2.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255))
+
+    cv2.putText(frame, str(ang), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    cv2.putText(frame, line, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+
+    frame = cv2.flip(frame, 1) # 1은 좌우 반전, 0은 상하 반전
+
     return frame
 
 def gen_frames():  # generate frame by frame from camera
     global capture
+
     while True:
 
         success, frame = camera.read()
@@ -138,6 +154,7 @@ def gen_frames():  # generate frame by frame from camera
                 now = datetime.datetime.now()
                 p = os.path.sep.join(['data/capture', "shots_{}.png".format(str(now).replace(":",''))])
                 cv2.imwrite(p, frame)
+            
             try:
                 # byte로 encode
                 ret, buffer = cv2.imencode('.jpg', cv2.flip(frame,1))
@@ -148,10 +165,6 @@ def gen_frames():  # generate frame by frame from camera
             except Exception as e:
                 pass
                 
-        else:
-            pass
-
-
 @app.route('/')
 def index():
     return render_template('video2.html')
@@ -202,7 +215,7 @@ def tasks():
                 pibo.clear_display()
 
                 ret = pibo.eye_on('white','white')
-                ret = pibo.set_motion('init_je', 1)
+                # ret = pibo.set_motion('init_je', 1)
                 print(ret)
 
             # if(line):
@@ -212,8 +225,7 @@ def tasks():
             
             if(switch==1):
                 switch=0
-                camera.release()
-                cv2.destroyAllWindows()
+                camera.release() #삭제
                 
             else:
                 camera = cv2.VideoCapture(0)
@@ -226,9 +238,10 @@ def tasks():
 
 if (__name__ == '__main__'):
     ret = pibo.eye_on('white','white')
-    # ret = pibo.set_motion('init_je', 1)
-    ret = pibo.set_motion('left', 1)
-    #ret = pibo.set_motion('walk_je2', 5)
+    ret = pibo.set_motion('init_je', 1)
+    time.sleep(2)
+    # ret = pibo.set_motion('left', 1)
+    # ret = pibo.set_motion('walk_je', 4)
     print(ret)
 
     app.run(host='192.168.1.87')

@@ -1,2 +1,0 @@
-# openpibo-study
-pibo project

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, Response,request
+from flask_socketio import SocketIO
 import cv2
 import datetime, time
 import os, sys
