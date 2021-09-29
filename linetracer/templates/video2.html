@@ -1,0 +1,22 @@
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8  offset-lg-2">
+    
+                
+                <h2 class="mt-5"> PIBO PROJECT </h2>
+                <form method="post" action="{{ url_for('tasks') }}">
+                <input type="submit" value="Stop/Start" name="stop" />
+                <input type="submit" value="Capture" name="click"/>
+                <input type="submit" value="Grey" name="grey" />
+                <input type="submit" value="Negative" name="neg" />
+                <input type="submit" value="Linetracing" name="line" />
+                </form>
+                <img src="{{ url_for('video_feed') }}">
+        
+
+            </div>
+        </div>
+    </div>
+    </body>
