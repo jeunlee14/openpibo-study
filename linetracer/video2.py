@@ -237,7 +237,8 @@ def tasks():
     return render_template('video2.html')
 
 if (__name__ == '__main__'):
-    ret = pibo.eye_on('white','white')
+    ret = pibo.eye_on('green','green')
+    #ret = pibo.eye_on('white','white')
     ret = pibo.set_motion('init_je', 1)
     time.sleep(2)
     # ret = pibo.set_motion('left', 1)

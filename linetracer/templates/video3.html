@@ -6,55 +6,50 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8  offset-lg-2">
-                <h2 class="mt-5"> PIBO PROJECT </h2>
-                <form method="post" action="{{ url_for('tasks') }}">
-                <input type="submit" value="Stop/Start" name="stop" />
-                <input type="submit" value="Capture" name="click"/>
-                <input type="submit" value="Grey" name="grey" />
-                <input type="submit" value="Negative" name="neg" />
-                <input type="submit" value="Linetracing" name="line" />
-                </form>
-                <img src="{{ url_for('gen_frames') }}">
-            </div>
-        </div>
-    </div>
-</body>
+    <h2 class="mt-5"> PIBO PROJECT </h2>
+    <button id="stop" value="Stop/Start">Stop/Start</button>  <br><br>              
+    <button id="click" value="Capture">Capture</button>  <br><br>
+    <button id="grey" value="Grey">Grey</button>  <br><br>
+    <button id="neg" value="Negative">Negative</button>  <br><br>
+    <button id="line" value="Linetracing">Linetracing</button>  <br><br>
+    </form>
+  </body>
+
   <script>
-    $(function(){
-      var socket = io();
+  $(function(){
+    var socket = io();
+    printf("d얀걇상겅")
 
-      $('#command').keypress(function(d){
-        if (d.charCode != 13)
-          return;
+    $('#stop').click(() => {
+      socket.emit( 'my event', { message : 'Stop' } )
+    })
 
-        $('#command_val').text($('#command').val())
-        socket.emit('command', $('#command').val())
-      });
+    $('#click').click(() => {
+      socket.emit( 'my event', { message : 'click' } )
+    })
 
-      socket.on('img', function(data){
-        $('#image').attr('src', 'data:image/jpeg;charset=utf-8;base64,'+data);
-      });
+    $('#grey').click(() => {
+      socket.emit( 'my event', { message : 'grey' } )
+    })
+    
+    $('#neg').click(() => {
+      socket.emit( 'my event', { message : 'neg' } )
+    })
 
-      socket.on('result', function(data){
-        $('#result_val').text(data)
-      });
+    $('#line').click(() => {
+      socket.emit( 'my event', { message : 'line' } )
+    })
+
+    socket.on('img', function(data){
+      $('#image').attr('src', 'data:image/jpeg;charset=utf-8;base64,'+data);
     });
+
+    socket.on('result', function(data){
+      $('#result_val').text(data)
+    });
+  );
+});
   </script>
-</head>
-<body>
-	<br>
-    <b><i>명령:</b></i>
-    <input type="text" id="command" size=50% />
-  </div>
-  <br>
-  <br>
-    <b><i>결과:</b></i>  <span id='result_val'></span> <br>
-    <div style="text-align:center;">
-      <img id='image'>
-    </div>
-  </div>
-</body>
+  <img id='image'>
+  </head>
 </html>

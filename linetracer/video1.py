@@ -15,6 +15,8 @@ sys.path.append(cfg.OPENPIBO_PATH + '/edu')
 #from pibo_control import Pibo_Control
 from pibo import Edu_Pibo
 
+pibo = Edu_Pibo
+
 sys.path.append(cfg.OPENPIBO_PATH + '/lib')
 from vision.visionlib import cCamera
 
@@ -23,22 +25,9 @@ socketio = SocketIO(app)
 camera = cv2.VideoCapture(0)
 img_path = '/home/pi/openpibo-study/linetracer/data/capture/new.png'
 
-
-def capture_test():
-    # Version 1. Camera on
-    pibo.camera_on()
-    pibo.start_camera()
-    time.sleep(1)
-    pibo.capture(img_path)
-    time.sleep(3)
-    pibo.stop_camera()
-
 @app.route('/')
 def sessions():
   return render_template('video1.html')
-
-#def messageReceived(methods=['GET', 'POST']):
-#    print()
 
 @socketio.on('command')
 def f_command(command, methods=['GET', 'POST']):
@@ -46,13 +35,13 @@ def f_command(command, methods=['GET', 'POST']):
 
    # opencv로 받은 이미지는 numpy_array
    # 저장하여 가져오는 이미지는 base64
-   #success, frame = camera.read()
-   #retval, buffer_img= cv2.imencode('.jpg', frame)
-   #img = base64.b64encode(buffer_img).decode('utf-8')
+   success, frame = camera.read()
+   retval, buffer_img= cv2.imencode('.jpg', frame)
+   img = base64.b64encode(buffer_img).decode('utf-8')
    #base64로 인코딩 후 문자열로 변환해서 socketio송신
 
-   capture_test()
-   img2 = base64.b64encode(open(img_path, 'rb').read()).decode('utf-8')
+   #capture_test()
+   #img2 = base64.b64encode(open(img_path, 'rb').read()).decode('utf-8')
    # print(type(open(img_path, 'rb').read()))
 
 #   if "사진" in command:
@@ -62,9 +51,9 @@ def f_command(command, methods=['GET', 'POST']):
 #   else:
 #     img = base64.b64encode(open(img_path, 'rb').read()).decode('utf-8')
 
+   print("여기서안됨")
    socketio.emit('img', img)
   #socketio.emit('result', ret)
 
 if __name__ == '__main__':
-  pibo = Edu_Pibo()
-  socketio.run(app, host='192.168.1.87')
+  app.run(host='192.168.1.87')
