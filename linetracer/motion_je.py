@@ -16,14 +16,33 @@ app = Flask(__name__)
 pibo = Edu_Pibo()
 
 if (__name__ == '__main__'):
-    time.sleep(3)
-    ret = pibo.eye_on('blue','white')
+    time.sleep(1)
     
+    ret = pibo.eye_on('blue','blue')
+    #ret = pibo.eye_on('blue','white')
+    #print(ret)
     
-    #pibo.set_motion("init_je", 1)
-    pibo.set_motion("turn_left_je", 1)
+    ret = pibo.set_motion("init_je", 1)
+    print(ret)
+    time.sleep(2)
+
+    #ret = pibo.eye_on('white','blue')
+    #print(ret)
+    #ret = pibo.set_motion("start_je1", 1)
+    #time.sleep(2)
+    #ret = pibo.set_motion("init_je", 1)
+    #time.sleep(2)
+
+    ret = pibo.set_motion("turn_init_je1", 1)  
+    print(ret)
+    time.sleep(10)
+    ret = pibo.set_motion("init_je", 1)  
+    #time.sleep(5)
+
+
+    #ret = pibo.set_motion("turn_left_je", 1)
     # ret = pibo.set_motion('left', 1)
     # ret = pibo.set_motion('walk_je', 4)
-    print(ret)
+    
 
     #app.run(host='192.168.1.87')
