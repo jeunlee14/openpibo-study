@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OPENPIBO-HOME</title>
+</head>
+<body>
+  <form action="" method="POST">
+    <button id="camera" value="카메라">카메라</button>  <br><br>
+  </form>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script>
+    var socket = io.connect('http://' + '192.168.35.2' + ':' + location.port);
+    socket.on( 'connect', function() {
+        
+        $('#camera').click(() => {
+            socket.emit( 'command', { message : 'camera' } )
+        })
+})
+
+  </script>
+</body>
+</html>

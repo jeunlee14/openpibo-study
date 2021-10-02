@@ -51,9 +51,8 @@ def f_command(command, methods=['GET', 'POST']):
 #   else:
 #     img = base64.b64encode(open(img_path, 'rb').read()).decode('utf-8')
 
-   print("여기서안됨")
    socketio.emit('img', img)
   #socketio.emit('result', ret)
 
 if __name__ == '__main__':
-  app.run(host='192.168.1.87')
+  socketio.run(app, host='0.0.0.0', port=8888)
