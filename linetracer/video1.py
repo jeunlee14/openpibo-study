@@ -33,26 +33,22 @@ def sessions():
 def f_command(command, methods=['GET', 'POST']):
   #ret = pibo.decode_func(command)
 
-   # opencv로 받은 이미지는 numpy_array
-   # 저장하여 가져오는 이미지는 base64
-   success, frame = camera.read()
-   retval, buffer_img= cv2.imencode('.jpg', frame)
-   img = base64.b64encode(buffer_img).decode('utf-8')
-   #base64로 인코딩 후 문자열로 변환해서 socketio송신
+  # opencv로 받은 이미지는 numpy_array
+  # 저장하여 가져오는 이미지는 base64
 
-   #capture_test()
-   #img2 = base64.b64encode(open(img_path, 'rb').read()).decode('utf-8')
-   # print(type(open(img_path, 'rb').read()))
+  #capture_test()
+  #img2 = base64.b64encode(open(img_path, 'rb').read()).decode('utf-8')
+  # print(type(open(img_path, 'rb').read()))
+  while True:
+    success, frame = camera.read()
+    retval, buffer_img= cv2.imencode('.jpg', frame)
+    img = base64.b64encode(buffer_img).decode('utf-8')
+    #base64로 인코딩 후 문자열로 변환해서 socketio송신
 
-#   if "사진" in command:
-#     success, frame = camera.read()
-#     #capture_test()
-#     img = base64.b64encode(frame).decode('utf-8')
-#   else:
-#     img = base64.b64encode(open(img_path, 'rb').read()).decode('utf-8')
-
-   socketio.emit('img', img)
-  #socketio.emit('result', ret)
+    socketio.emit('img', img)
+    #print(type(img))
+    #socketio.emit('result', ret)
+  return render_template('video2.html')
 
 if __name__ == '__main__':
   socketio.run(app, host='0.0.0.0', port=8888)
