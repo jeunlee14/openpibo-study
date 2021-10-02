@@ -12,7 +12,7 @@
       메세지 보내기 : <input type="text" class="message" style='font-size:15px;' placeholder="Messages"/>
       <input type="submit" value="전송"/> <br><br>
 
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp  <button id="capture" value="찰칵">사진찍기</button>  <br><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <button id="capture" value="찰칵">사진찍기</button>  <br><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button id="show" value="보기">사진보기</button>  <br><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button id="move" value="모션">움직이기</button>  <br><br>
     </form>
@@ -23,7 +23,7 @@
       
       var socket = io.connect('http://' + '192.168.1.87' + ':' + location.port);
 
-      socket.on( 'connect', function() {
+      socket.on('connect', function() {
 
         $('form').on('submit', function( e ) {
           e.preventDefault()
