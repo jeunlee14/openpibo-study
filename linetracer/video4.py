@@ -17,29 +17,43 @@ from pibo import Edu_Pibo
 
 pibo = Edu_Pibo
 
-sys.path.append(cfg.OPENPIBO_PATH + '/lib')
-from vision.visionlib import cCamera
-
 app = Flask(__name__)
 socketio = SocketIO(app)
 camera = cv2.VideoCapture(0)
+
+def messageReceived(methods=['GET', 'POST']):
+    print("success")
 
 @app.route('/')
 def sessions():
   return render_template('video4.html')
 
+def gen_frames(): 
+  while True:
+    success, frame = camera.read()
+    if success:
 
-def messageReceived(methods=['GET', 'POST']):
-    print("success")
+      try :
+        retval, buffer_img= cv2.imencode('.jpg', frame)
+        img = base64.b64encode(buffer_img).decode('utf-8')
+        yield img
+      
+      except Exception as e:
+        pass
 
 
 @socketio.on('command')
 def f_command(json, methods=['GET', 'POST']):
-    data = str(json.get('message'))
-    print("received data :", data)
+  data = str(json.get('message'))
+  print("received data :", data)
 
-    if 'camera' in data:
-        print("안녕")
+  if 'camera' in data:
+    
+    img = gen_frames()
+    socketio.emit('img', img)
+    
+    return render_template('video4.html')
+
 
 if __name__ == '__main__':
-  socketio.run(app, host='192.168.35.2', port=8888)
+  socketio.run(app, host='192.168.35.2', port=8888, debug=False)

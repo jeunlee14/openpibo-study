@@ -162,7 +162,7 @@ if __name__ == '__main__':
   #capture_test()
   #image_test()
   text_test("시작합니다.")
-  socketio.run(app, host='192.168.1.87', port=8888, debug=False)
+  socketio.run(app, host='192.168.35.2', port=8888, debug=False)
 
 
   

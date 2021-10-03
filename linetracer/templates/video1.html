@@ -5,6 +5,7 @@
   <title>OPENPIBO-HOME</title>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  
   <script>
     $(function(){
       var socket = io();
@@ -19,11 +20,9 @@
 
       socket.on('img', function(data){
         $('#image').attr('src', 'data:image/jpeg;charset=utf-8;base64,'+data);
+        
       });
 
-      socket.on('result', function(data){
-        $('#result_val').text(data)
-      });
     });
   </script>
 </head>
@@ -34,8 +33,6 @@
   </div>
   <br>
   <br>
-    <b><i>결과:</b></i>  <span id='result_val'></span> <br>
-    <div style="text-align:center;">
       <img id='image'>
     </div>
   </div>
