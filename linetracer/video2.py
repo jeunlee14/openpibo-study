@@ -4,6 +4,7 @@ import datetime, time
 import os, sys
 import numpy as np
 from threading import Thread
+import asyncio
 
 
 # 상위 디렉토리 추가 (for utils.config)
@@ -53,25 +54,45 @@ def text_test(msg):
     time.sleep(2)
     pibo.clear_display()
 
-def move_line():
-    global line_res
-    print('line_res= ', line_res)
+def move_line(res):
+    # global line_res
+    global count
+    #print('line_res in move_line =', res)
 
     if line_res == 'straight':
         ret = pibo.set_motion('walk_je2', 2)
         print(ret)
+        time.sleep(1)
+        count = 0
+        print('line_res in straight =', res)
     
     elif line_res == 'corner':
         ret = pibo.set_motion('turn_je', 1)
         print(ret)
+        time.sleep(1)
+        count = 0
+        print('line_res in corner =', res)
 
     return
 
-def move_line_thread():
-    print('thread start')
-    t = Thread(target=move_line, args=())
-    t.daemon = True
-    t.start()
+# async def move_line_async(line_res):
+#     await asyncio.wait(move_line(line_res))
+
+def move_line_thread(line_res):
+    global count
+    res = 0
+    if count == 0 :
+        res = line_res
+        count = 1
+        #print('thread start')
+        t = Thread(target=move_line, args=(res,))
+        t.daemon = True # main 종료시 종료
+        t.start()
+
+    
+    
+    # t.join() # 서브 스레드가 일하는 동안 메인 스레드는 stop, sub 스레드 완료 후 main이 실행됨
+    
 
 def detect_line(frame):
     global line_res
@@ -122,14 +143,14 @@ def detect_line(frame):
     # print('x-w/2 ={}, y-h/2={}'.format(x-w/2, y-h/2))
 
     if w < 80 or h < 80 :
-        line_res = "straight"
+        line_res = "straight" # straight
         
         # print("A")
         # ret = pibo.set_motion('walk_je2', 5)
         # print("B")
         
     else:
-        line_res = "corner"
+        line_res = "corner" # corner
         #ret = pibo.set_motion('init_je', 1)
 
     cv2.circle(frame, (int(x), int(y)), 3, (255, 0, 0), 10)
@@ -148,7 +169,7 @@ def detect_line(frame):
     return frame
 
 def gen_frames():  # generate frame by frame from camera
-    global capture, line_res, count
+    global capture, line_res
 
     while True:
 
@@ -159,6 +180,7 @@ def gen_frames():  # generate frame by frame from camera
             
             if(line): 
                 frame = detect_line(frame)
+                move_line_thread(line_res)
 
             if(grey):
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -206,11 +228,13 @@ def tasks():
             neg=not neg
         elif  request.form.get('line') == 'Linetracing':
             global line
-
             if line == 0:
                 line = 1
                 ret = pibo.set_motion('start_je', 1)
                 print(ret)
+
+                # print('line_res =', line_res)
+                # asyncio.run(move_line_async(line_res))
                 
                 # ret=pibo.draw_image("/home/pi/openpibo-study/linetracer/data/text/start.png")
                 # print(ret)
@@ -253,17 +277,11 @@ def tasks():
     return render_template('video2.html')
 
 if (__name__ == '__main__'):
-    
-    move_line_thread()
-
     # ret = pibo.eye_on('green','green')
     # #ret = pibo.eye_on('white','white')
-    # ret = pibo.set_motion('init_je', 1)
-    # print(ret)
-    # time.sleep(5)
-    # ret = pibo.set_motion('walk_je2', 7)
-    # print(ret)
-    
+    ret = pibo.set_motion('init_je', 1)
+    print(ret)
+    time.sleep(5)    
     # ret = pibo.set_motion('left', 1)
     # ret = pibo.set_motion('walk_je', 4)
 
