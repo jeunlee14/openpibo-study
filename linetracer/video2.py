@@ -57,17 +57,20 @@ def text_test(msg):
 def move_line(res):
     # global line_res
     global count
-    #print('line_res in move_line =', res)
+    print('line_res in move_line =', res)
+
+    if line_res == 0:
+        count = 0
 
     if line_res == 'straight':
-        ret = pibo.set_motion('walk_je2', 2)
+        ret = pibo.set_motion('walk_je', 2)
         print(ret)
         time.sleep(1)
         count = 0
         print('line_res in straight =', res)
     
     elif line_res == 'corner':
-        ret = pibo.set_motion('turn_je', 1)
+        ret = pibo.set_motion('turn_init_je1', 1)
         print(ret)
         time.sleep(1)
         count = 0
@@ -84,7 +87,7 @@ def move_line_thread(line_res):
     if count == 0 :
         res = line_res
         count = 1
-        #print('thread start')
+        print('thread start')
         t = Thread(target=move_line, args=(res,))
         t.daemon = True # main 종료시 종료
         t.start()
@@ -281,7 +284,10 @@ if (__name__ == '__main__'):
     # #ret = pibo.eye_on('white','white')
     ret = pibo.set_motion('init_je', 1)
     print(ret)
-    time.sleep(5)    
+    time.sleep(5)  
+
+    # ret = pibo.set_motion('turn_init_je1', 1)
+    # print(ret)  
     # ret = pibo.set_motion('left', 1)
     # ret = pibo.set_motion('walk_je', 4)
 
