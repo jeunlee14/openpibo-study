@@ -5,6 +5,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 import cv2
 import time
+from threading import Thread
 
 # 상위 디렉토리 추가 (for utils.config)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -55,4 +56,4 @@ def f_command(json, methods=['GET', 'POST']):
 
 if __name__ == '__main__':
   gen_frames_thread()
-  socketio.run(app, host='192.168.35.2', port=8888, debug=False)
+  socketio.run(app, host='192.168.35.187', port=8888, debug=False)
