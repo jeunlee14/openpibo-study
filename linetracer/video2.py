@@ -46,11 +46,6 @@ print('Frame width:', int(camera.get(cv2.CAP_PROP_FRAME_WIDTH)))
 print('Frame height:', int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 print('Frame Fps:', int(camera.get(cv2.CAP_PROP_FPS)))
 
-def speak(_text):
-    voice = '<speak><voice name="WOMAN_READ_CALM">{}<break time="500ms"/></voice></speak>'.format(_text)
-    ret_voice = pibo.tts('{}'.format(voice), filename)
-    pibo.play_audio(filename, out='local', background=True, volume=-1500) 
-
 def text_test(msg):
     
     ret = pibo.draw_text((10,10), msg, 15)
@@ -59,63 +54,32 @@ def text_test(msg):
     time.sleep(2)
     pibo.clear_display()
 
-def decode(text):
-    global line
-    result = '파이보가 명령어를 제대로 이해하지 못했어요.'
-    print(f'input text : {text}')
-    if text != None:
-        if text.find('라인') > -1  or text.find('나인') > -1 or text.find('9') > -1 :
-            pibo.stop_devices()
-            result = '라인트레이싱을 시작할게'
-            if line == 0:
-                line = 1
-            else:
-                line = 0
-    
-    print(f'result : {result}')         
-    return result
-
-def msg_device(msg):
-    print(f'message : {msg}')
-    check = msg.split(':')[1]
-
-    if check.find('touch') > -1:
-        ret_text = pibo.stt()
-        
-        ret = decode(ret_text['data'])
-        speak(ret)
- 
-        # pibo.draw_image(cfg.TESTDATA_PATH+'/icon/pibo_logo.png')
-        # pibo.show_display()
-
-def device_thread():
-    global line
-    ret = pibo.start_devices(msg_device)
-    print(f'ret : {ret}')
-
-
 def move_line(res):
     # global line_res
     global count
     print('line_res in move_line =', res)
 
-    if line_res == 0:
+    if res == 0:
         count = 0
 
-    if line_res == 'straight':
+    if res == 'straight':
         ret = pibo.set_motion('walk_je', 2)
+        print('a')
         print('직선 결과', ret)
+        time.sleep(1)
+        print('b')
         time.sleep(1)
         count = 0
         print('line_res in straight =', res)
     
-    elif line_res == 'corner':
+    elif res == 'corner':
         ret = pibo.set_motion('turn_je3', 1)
-        print('회전 결과', ret)
+        #print('회전 결과', ret)
         time.sleep(1)
         count = 0
         print('line_res in corner =', res)
 
+    print('c')
     return
 
 # async def move_line_async(line_res):
@@ -222,10 +186,8 @@ def gen_frames():  # generate frame by frame from camera
             if(line): 
                 frame = detect_line(frame)
                 ret = pibo.set_motion('start_je', 1)
-                print(ret)
-
+                #print('라인트레이싱 시작')
                 move_line_thread(line_res)
-                
 
             if(grey):
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -275,6 +237,7 @@ def tasks():
             global line
             if line == 0:
                 line = 1
+                # pibo.stop_devices()
             else:
                 line = 0
 
@@ -286,9 +249,6 @@ def tasks():
                 
             else:
                 camera = cv2.VideoCapture(0)
-                # camera.set(3,W_View_size)
-                # camera.set(4,H_View_size)
-                # camera.set(5,FPS)
                 switch=1
 
     return render_template('video2.html')
@@ -296,11 +256,10 @@ def tasks():
 if (__name__ == '__main__'):
     # ret = pibo.eye_on('green','green')
     # #ret = pibo.eye_on('white','white')
-    print('start check device')
-    device_thread()
-    speak('안녕? 난 파이보야. 지금부터 데모를 시작할게!')
+    # print('start check device')
+
     ret = pibo.set_motion('init_je', 1)
-    print(ret)
+    #print(ret)
     time.sleep(5)  
 
     #ret = pibo.set_motion('turn_left_je3', 1)
