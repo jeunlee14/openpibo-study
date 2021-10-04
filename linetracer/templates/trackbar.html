@@ -1,33 +1,75 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-    <title>MOTION Creator</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous"/>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-  </head>
-  <body>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>trackbar</title>  
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<form action="" method="POST">
+  <br/>
     <div data-role="Y">
-        <label for="range-1a">Y_max:</label>
-        <input name="range-1a" id="range-1a" type="range" min="0" max="255" value="255">
-        <label for="range-1b">Y_min:</label>
-        <input name="range-1b" id="range-1b" type="range" min="0" max="255" value="0">
+        <label for="Y_max">Y_max:</label>
+        <input id="Y_max_in" type="range" min="0" max="255" value="255" align="center">
+        <div id="Y_max_out"></div>
+        <br/>
+        <label for="Y_min">Y_min:</label>
+        <input id="Y_min_in" type="range" min="0" max="255" value="0" align="center">
+        <div id="Y_min_out"></div>
+        <br/>
     </div>
     <div data-role="Cb">
-        <label for="range-2a">Cb_max:</label>
-        <input name="range-2a" id="range-2a" type="range" min="0" max="255" value="255">
-        <label for="range-2b">Cb_min:</label>
-        <input name="range-2b" id="range-2b" type="range" min="0" max="255" value="0">
+        <label for="Cb_max">Cb_max:</label>
+        <input id="Cb_max_in" type="range" min="0" max="255" value="255" align="center">
+        <div id="Cb_max_out"></div>
+        <br/>
+        <label for="Cb_min">Cb_min:</label>
+        <input id="Cb_min_in" type="range" min="0" max="255" value="0" align="center">
+        <div id="Cb_min_out"></div>
+        <br/>
     </div>
     <div data-role="Cr">
-      <label for="range-1a">Cr_max:</label>
-      <input name="range-1a" id="range-1a" type="range" min="0" max="255" value="255">
-      <label for="range-1b">Cr_min:</label>
-      <input name="range-1b" id="range-1b" type="range" min="0" max="255" value="0">
-  </div>
-    </body>
-  </div>
+      <label for="Cr_max">Cr_max:</label>
+      <input id="Cr_max_in" type="range" min="0" max="255" value="255" align="center">
+      <div id="Cr_max_out"></div>
+      <br/>
+      <label for="Cr_min">Cr_min:</label>
+      <input id="Cr_min_in" type="range" min="0" max="255" value="0" align="center">
+      <div id="Cr_min_out"></div>
+      <br/>
+    </div>
+    <button id="submit" value="submit">전송</button>  <br><br>
+</form>
+<script>
+  var socket = io.connect('http://' + '192.168.35.187' + ':' + location.port);
+
+  $('#submit').click(() => {
+    let user_input = [$('#Y_max_in').val(), $('#Y_min_in').val()]
+    socket.emit( 'Y_max_abc', { message : user_input } )
+  })
+ 
+</script>
+<body>
+    <script>
+      document.querySelector('#Y_max_in').addEventListener('input',e=>{
+          document.querySelector('#Y_max_out').innerHTML= e.target.value;
+      });
+      document.querySelector('#Y_min_in').addEventListener('input',e=>{
+            document.querySelector('#Y_min_out').innerHTML= e.target.value;
+        });
+      document.querySelector('#Cb_max_in').addEventListener('input',e=>{
+            document.querySelector('#Cb_max_out').innerHTML= e.target.value;
+        });
+      document.querySelector('#Cb_min_in').addEventListener('input',e=>{
+            document.querySelector('#Cb_min_out').innerHTML= e.target.value;
+        });
+      document.querySelector('#Cr_max_in').addEventListener('input',e=>{
+            document.querySelector('#Cr_max_out').innerHTML= e.target.value;
+        });
+      document.querySelector('#Cr_min_in').addEventListener('input',e=>{
+            document.querySelector('#Cr_min_out').innerHTML= e.target.value;
+        });
+    </script>
+</body>
 </html>
