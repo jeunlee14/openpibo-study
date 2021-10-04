@@ -28,6 +28,11 @@ def messageReceived(methods=['GET', 'POST']):
 def sessions():
   return render_template('video4.html')
 
+def gen_frames_thread():
+  t = Thread(target=gen_frames, args=())
+  t.daemon = True
+  t.start() 
+
 def gen_frames(): 
   while True:
     success, frame = camera.read()
@@ -36,7 +41,7 @@ def gen_frames():
       try :
         retval, buffer_img= cv2.imencode('.jpg', frame)
         img = base64.b64encode(buffer_img).decode('utf-8')
-        yield img
+        socketio.emit('img', img)
       
       except Exception as e:
         pass
@@ -47,13 +52,7 @@ def f_command(json, methods=['GET', 'POST']):
   data = str(json.get('message'))
   print("received data :", data)
 
-  if 'camera' in data:
-    
-    img = gen_frames()
-    socketio.emit('img', img)
-    
-    return render_template('video4.html')
-
 
 if __name__ == '__main__':
+  gen_frames_thread()
   socketio.run(app, host='192.168.35.2', port=8888, debug=False)

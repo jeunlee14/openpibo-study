@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>trackbar</title>  
+  <title>trackbar</title>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 </head>
@@ -41,14 +41,20 @@
     </div>
     <button id="submit" value="submit">전송</button>  <br><br>
 </form>
+
+<img src="{{ url_for('video_feed') }}">
 <script>
   var socket = io.connect('http://' + '192.168.35.187' + ':' + location.port);
 
   $('#submit').click(() => {
-    let user_input = [$('#Y_max_in').val(), $('#Y_min_in').val()]
+
+    let user_input = [$('#Y_max_in').val(), $('#Y_min_in').val(),
+                      $('#Cb_max_in').val(), $('#Cb_min_in').val(),
+                      $('#Cr_max_in').val(), $('#Cr_min_in').val()]
     socket.emit( 'Y_max_abc', { message : user_input } )
   })
- 
+  
+
 </script>
 <body>
     <script>
