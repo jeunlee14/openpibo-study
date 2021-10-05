@@ -62,24 +62,19 @@ def move_line(res):
     if res == 0:
         count = 0
 
-    if res == 'straight':
-        ret = pibo.set_motion('walk_je', 2)
-        print('a')
-        print('직선 결과', ret)
-        time.sleep(1)
-        print('b')
-        time.sleep(1)
+    elif res == 'straight':
+        ret = pibo.set_motion('walk_je', 1)
+        print(ret)
+        time.sleep(10)
         count = 0
         print('line_res in straight =', res)
     
     elif res == 'corner':
         ret = pibo.set_motion('turn_je3', 1)
-        #print('회전 결과', ret)
-        time.sleep(1)
+        print(ret)
         count = 0
         print('line_res in corner =', res)
 
-    print('c')
     return
 
 # async def move_line_async(line_res):
@@ -91,10 +86,10 @@ def move_line_thread(line_res):
     if count == 0 :
         res = line_res
         count = 1
-        print('thread start')
         t = Thread(target=move_line, args=(res,))
         t.daemon = True # main 종료시 종료
         t.start()
+        print('thread start')
         # t.join() # 서브 스레드가 일하는 동안 메인 스레드는 stop, sub 스레드 완료 후 main이 실행됨
     
 
@@ -185,7 +180,6 @@ def gen_frames():  # generate frame by frame from camera
             
             if(line): 
                 frame = detect_line(frame)
-                ret = pibo.set_motion('start_je', 1)
                 #print('라인트레이싱 시작')
                 move_line_thread(line_res)
 
@@ -237,9 +231,12 @@ def tasks():
             global line
             if line == 0:
                 line = 1
-                # pibo.stop_devices()
+                ret = pibo.set_motion('start_je', 1)
+                print(ret)
             else:
                 line = 0
+                ret = pibo.set_motion('init_je', 1)
+                print(ret)
 
         elif  request.form.get('stop') == 'Stop/Start':
             
@@ -259,12 +256,14 @@ if (__name__ == '__main__'):
     # print('start check device')
 
     ret = pibo.set_motion('init_je', 1)
-    #print(ret)
+    print(ret)
     time.sleep(5)  
 
+    # ret = pibo.set_motion('walk_je', 1)
+    # print(ret)
     #ret = pibo.set_motion('turn_left_je3', 1)
     # print(ret)  
     # ret = pibo.set_motion('left', 1)
     # ret = pibo.set_motion('walk_je', 4)
 
-    app.run(host='192.168.35.187')
+    app.run(host='192.168.1.242')
