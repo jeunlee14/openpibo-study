@@ -61,6 +61,8 @@ def decode(text):
             result = '라인트레이싱을 시작할게'
             if line == 0:
                 line = 1
+                ret = pibo.set_motion('start_je', 1)
+                print(ret)
             else:
                 line = 0
 
