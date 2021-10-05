@@ -25,27 +25,30 @@ def main():
     return render_template('trackbar.html')
 
 @socketio.on('Y_max_abc')
-def Y_max_abcd(json, methods=['GET', 'POST']):
+def Y_max_abc(json, methods=['GET', 'POST']):
+    print('received')
     global lower, higher
     data = str(json)
     print('received my event: ' + data)
 
-    Y_max_in = (str(json.get('Y_max_in'))).replace('\'','')
-    Y_min_in = (str(json.get('Y_min_in'))).replace('\'','')
-    Cb_max_in = (str(json.get('Cb_max_in'))).replace('\'','')
-    Cb_min_in = (str(json.get('Cb_min_in'))).replace('\'','')
-    Cr_max_in = (str(json.get('Cr_max_in'))).replace('\'','')
-    Cr_min_in = (str(json.get('Cr_min_in'))).replace('\'','')
+    # Y_max_in = (str(json.get('Y_max_in'))).replace('\'','')
+    # Y_min_in = (str(json.get('Y_min_in'))).replace('\'','')
+    # Cb_max_in = (str(json.get('Cb_max_in'))).replace('\'','')
+    # Cb_min_in = (str(json.get('Cb_min_in'))).replace('\'','')
+    # Cr_max_in = (str(json.get('Cr_max_in'))).replace('\'','')
+    # Cr_min_in = (str(json.get('Cr_min_in'))).replace('\'','')
+
+    Y_max_in = str(json.get('Y_max_in'))
+    Y_min_in = str(json.get('Y_min_in'))
+    Cb_max_in =str(json.get('Cb_max_in'))
+    Cb_min_in = str(json.get('Cb_min_in'))
+    Cr_max_in = str(json.get('Cr_max_in'))
+    Cr_min_in = str(json.get('Cr_min_in'))
     
     lower = np.array([Y_min_in, Cb_min_in, Cr_min_in])
     higher = np.array([Y_max_in, Cb_max_in, Cr_max_in])
     print('lower = {}, higher = {}'.format(lower, higher))
     
-def gen_frames_thread():
-  t = Thread(target=gen_frames, args=())
-  t.daemon = True
-  t.start() 
-
 def gen_frames():  # generate frame by frame from camera
     global lower, higher
 
@@ -57,6 +60,7 @@ def gen_frames():  # generate frame by frame from camera
             frame = cv2.flip(frame, -1)
             YCrCb = cv2.cvtColor(frame, cv2.COLOR_BGR2YCR_CB)
             Gmask = cv2.inRange(YCrCb, lower, higher)
+            #print('lower = {}, higher = {} in gen_frame'.format(lower, higher))
 
             frame_mask = cv2.bitwise_and(frame, frame, mask=Gmask)
 
@@ -75,5 +79,4 @@ def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    
     socketio.run(app, host='192.168.1.242', port=5555)
