@@ -46,6 +46,46 @@ print('Frame width:', int(camera.get(cv2.CAP_PROP_FRAME_WIDTH)))
 print('Frame height:', int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 print('Frame Fps:', int(camera.get(cv2.CAP_PROP_FPS)))
 
+def speak(_text):
+    voice = '<speak><voice name="WOMAN_READ_CALM">{}<break time="500ms"/></voice></speak>'.format(_text)
+    ret_voice = pibo.tts('{}'.format(voice), filename)
+    pibo.play_audio(filename, out='local', background=True, volume=-1500) 
+
+def decode(text):
+    global line
+    result = '파이보가 명령어를 제대로 이해하지 못했어요.'
+    print(f'input text : {text}')
+    if text != None:
+        if text.find('라인') > -1  or text.find('나인') > -1 or text.find('9') > -1 :
+            pibo.stop_devices()
+            result = '라인트레이싱을 시작할게'
+            if line == 0:
+                line = 1
+            else:
+                line = 0
+
+    print(f'result : {result}')         
+    return result
+
+def msg_device(msg):
+    print(f'message : {msg}')
+    check = msg.split(':')[1]
+
+    if check.find('touch') > -1:
+        ret_text = pibo.stt()
+
+        ret = decode(ret_text['data'])
+        speak(ret)
+
+        # pibo.draw_image(cfg.TESTDATA_PATH+'/icon/pibo_logo.png')
+        # pibo.show_display()
+
+def device_thread():
+    global line
+    ret = pibo.start_devices(msg_device)
+    print(f'ret : {ret}')
+
+
 def text_test(msg):
     
     ret = pibo.draw_text((10,10), msg, 15)
@@ -63,15 +103,16 @@ def move_line(res):
         count = 0
 
     elif res == 'straight':
-        ret = pibo.set_motion('walk_je', 1)
+        ret = pibo.set_motion('walk_je', 2)
         print(ret)
-        time.sleep(10)
+        time.sleep(1)
         count = 0
         print('line_res in straight =', res)
     
     elif res == 'corner':
         ret = pibo.set_motion('turn_je3', 1)
         print(ret)
+        time.sleep(1)
         count = 0
         print('line_res in corner =', res)
 
@@ -258,6 +299,9 @@ if (__name__ == '__main__'):
     ret = pibo.set_motion('init_je', 1)
     print(ret)
     time.sleep(5)  
+
+    print('start check device')
+    device_thread()
 
     # ret = pibo.set_motion('walk_je', 1)
     # print(ret)
