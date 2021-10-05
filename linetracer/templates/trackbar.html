@@ -7,6 +7,7 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js'></script>
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 </head>
+<center>
 <form action="" method="POST">
   <br/>
     <div data-role="Y">
@@ -43,15 +44,15 @@
 </form>
 
 <img src="{{ url_for('video_feed') }}">
+</center>
 <script>
-  var socket = io.connect('http://' + '192.168.35.187' + ':' + location.port);
+  var socket = io.connect('http://' + '192.168.1.242' + ':' + location.port);
 
   $('#submit').click(() => {
 
-    let user_input = [$('#Y_max_in').val(), $('#Y_min_in').val(),
-                      $('#Cb_max_in').val(), $('#Cb_min_in').val(),
-                      $('#Cr_max_in').val(), $('#Cr_min_in').val()]
-    socket.emit( 'Y_max_abc', { message : user_input } )
+    socket.emit( 'Y_max_abc', { Y_max_in : $('#Y_max_in').val(), Y_min_in : $('#Y_min_in').val(), 
+                                Cb_max_in : $('#Cb_max_in').val(), Cb_min_in : $('#Cb_min_in').val(),
+                                Cr_max_in : $('#Cr_max_in').val(), Cr_min_in : $('#Cr_min_in').val() } )
   })
   
 

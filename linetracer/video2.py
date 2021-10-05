@@ -49,6 +49,7 @@ print('Frame Fps:', int(camera.get(cv2.CAP_PROP_FPS)))
 def speak(_text):
     voice = '<speak><voice name="WOMAN_READ_CALM">{}<break time="500ms"/></voice></speak>'.format(_text)
     ret_voice = pibo.tts('{}'.format(voice), filename)
+    #eye_color_thread()
     pibo.play_audio(filename, out='local', background=True, volume=-1500) 
 
 def decode(text):
@@ -75,18 +76,25 @@ def msg_device(msg):
 
     if check.find('touch') > -1:
         ret_text = pibo.stt()
-
         ret = decode(ret_text['data'])
         speak(ret)
 
         # pibo.draw_image(cfg.TESTDATA_PATH+'/icon/pibo_logo.png')
         # pibo.show_display()
 
+def eye_color_thread():
+    th = Thread(target=eye_color, args=())
+    th.daemon = True # main 종료시 종료
+    th.start()
+    print('thread start')
+
+def eye_color():
+    ret = pibo.eye_on('green','green')
+
 def device_thread():
     global line
     ret = pibo.start_devices(msg_device)
     print(f'ret : {ret}')
-
 
 def text_test(msg):
     
@@ -295,7 +303,10 @@ def tasks():
 
 if (__name__ == '__main__'):
     # ret = pibo.eye_on('green','green')
-    # #ret = pibo.eye_on('white','white')
+    #ret = pibo.eye_on('blue','red')
+
+
+    ret = pibo.eye_on('white','white')
     # print('start check device')
 
     ret = pibo.set_motion('init_je', 1)
@@ -305,7 +316,7 @@ if (__name__ == '__main__'):
     print('start check device')
     device_thread()
 
-    # ret = pibo.set_motion('walk_je', 1)
+    # ret = pibo.set_motion('walk_je', 2)
     # print(ret)
     #ret = pibo.set_motion('turn_left_je3', 1)
     # print(ret)  

@@ -27,13 +27,18 @@ def main():
 @socketio.on('Y_max_abc')
 def Y_max_abcd(json, methods=['GET', 'POST']):
     global lower, higher
-    print('received my event: ' + str(json))
-    
-    data = str(json.get('message'))
-    print(type(data))
+    data = str(json)
+    print('received my event: ' + data)
 
-    lower = np.array([data[1], data[3], data[5]])
-    higher = np.array([data[0], data[2], data[4]])
+    Y_max_in = (str(json.get('Y_max_in'))).replace('\'','')
+    Y_min_in = (str(json.get('Y_min_in'))).replace('\'','')
+    Cb_max_in = (str(json.get('Cb_max_in'))).replace('\'','')
+    Cb_min_in = (str(json.get('Cb_min_in'))).replace('\'','')
+    Cr_max_in = (str(json.get('Cr_max_in'))).replace('\'','')
+    Cr_min_in = (str(json.get('Cr_min_in'))).replace('\'','')
+    
+    lower = np.array([Y_min_in, Cb_min_in, Cr_min_in])
+    higher = np.array([Y_max_in, Cb_max_in, Cr_max_in])
     print('lower = {}, higher = {}'.format(lower, higher))
     
 def gen_frames_thread():
@@ -71,4 +76,4 @@ def video_feed():
 
 if __name__ == '__main__':
     
-    socketio.run(app, host='192.168.35.187', port=5555)
+    socketio.run(app, host='192.168.1.242', port=5555)

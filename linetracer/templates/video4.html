@@ -8,19 +8,19 @@
 
   <form>
     <button id="camera" value="카메라">카메라</button>
+    <!-- <img src="{{ url_for('gen_frames_thread_start') }}"> -->
   </form>
 
   <script>
   $(function(){
       var socket = io.connect('http://' + '192.168.1.242' + ':' + location.port);
       
-
       socket.on('img', function(data){
-        $('#image').attr('src', 'data:image/jpeg;charset=utf-8;base64,' + data)
+        $('#image').attr('src', 'data:image/jpeg;charset=utf-8;base64,' + data);
     
       //const imageElm = document.getElementById('img');
       //imageElm.src = 'data:image/jpeg;charset=utf-8;base64,', $(data);
-      })
+      });
       
       $('#camera').click(() => {
           socket.emit( 'command', { message : 'camera' } )

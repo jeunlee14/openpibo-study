@@ -29,6 +29,9 @@ def messageReceived(methods=['GET', 'POST']):
 def sessions():
   return render_template('video4.html')
 
+@app.route('/gen_frames_thread_start')
+def gen_frames_thread_start():
+  return gen_frames_thread()
 
 def gen_frames_thread():
 
@@ -37,9 +40,6 @@ def gen_frames_thread():
   t.start() 
   # threading.Timer(2.5, gen_frames).start()
 
-def emit_thread():
-  print('사진전송')
-  socketio.emit('img', img)
 
 def gen_frames(): 
   while True:
@@ -49,8 +49,9 @@ def gen_frames():
       try :
         retval, buffer_img= cv2.imencode('.jpg', frame)
         img = base64.b64encode(buffer_img).decode('utf-8')
-      
-        threading.Timer(2.5, target=gen_frames, args=(img,)).start()
+
+        print('사진전송')
+        socketio.emit('img', img)
       
       except Exception as e:
         pass
