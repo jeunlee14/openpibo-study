@@ -13,8 +13,8 @@ sys.path.append(cfg.OPENPIBO_PATH + '/edu')
 #from pibo_control import Pibo_Control
 from pibo import Edu_Pibo
 
-global capture, grey, switch, neg, line, hsv, check
-capture, grey, neg, line, hsv, switch = 0,0,0,0,0,1,
+global capture, grey, switch, ycbcr, line, hsv, check
+capture, grey, ycbcr, line, hsv, switch = 0,0,0,0,0,1,
 
 # W_View_size = 320
 # H_View_size = 240
@@ -104,8 +104,8 @@ def gen_frames():  # generate frame by frame from camera
 
         if success:
             
-            if(line): 
-                frame = detect_line(frame)
+            if(line):   
+                frame = Linetracing(frame)
                 #print('라인트레이싱 시작')
                 line_res = func_line_res()
                 move_line_thread(line_res)
@@ -113,12 +113,24 @@ def gen_frames():  # generate frame by frame from camera
             if(grey):
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            if(neg):
-                frame=cv2.bitwise_not(frame) 
+            if(ycbcr):
+                lower = np.array([235, 0, 0])
+                upper = np.array([255, 255, 255])
+
+                blur = cv2.GaussianBlur(frame, (3, 3), 0)
+
+                bgr2ycbcr = cv2.cvtColor(frame, cv2.COLOR_BGR2YCR_CB)
+                kernel = np.ones((5, 5), np.uint8)
+
+                mask = cv2.inRange(bgr2ycbcr, lower, upper)
+                mask = cv2.dilate(mask, kernel, iterations=2)
+                frame = mask
+                # frame=cv2.bitwise_not(frame)
 
             if(capture):
                 capture=0
                 now = datetime.datetime.now()
+                
                 p = os.path.sep.join(['data/capture', "shots_{}.png".format(str(now).replace(":",''))])
                 cv2.imwrite(p, frame)
             
@@ -151,9 +163,9 @@ def tasks():
         elif  request.form.get('grey') == 'Grey':
             global grey
             grey=not grey
-        elif  request.form.get('neg') == 'Negative':
-            global neg
-            neg=not neg
+        elif  request.form.get('ycbcr') == 'ycbcr':
+            global ycbcr
+            ycbcr=not ycbcr
         elif  request.form.get('line') == 'Linetracing':
             global line
             if line == 0:
@@ -185,7 +197,8 @@ if (__name__ == '__main__'):
     ret = pibo.eye_on('white','white')
     # print('start check device')
 
-    ret = pibo.set_motion('start_je', 1)
+    #ret = pibo.set_motion('start_je', 1)
+    ret = pibo.set_motion('init_je', 1)
     print(ret)
     time.sleep(5)  
 
