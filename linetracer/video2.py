@@ -1,11 +1,8 @@
 from flask import Flask, render_template, Response,request
-import cv2
 import datetime, time
 import os, sys
-import numpy as np
-from threading import Thread
 import asyncio
-
+from linetrace import *
 
 # 상위 디렉토리 추가 (for utils.config)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -16,20 +13,12 @@ sys.path.append(cfg.OPENPIBO_PATH + '/edu')
 #from pibo_control import Pibo_Control
 from pibo import Edu_Pibo
 
-global capture, grey, switch, neg, line, hsv, check, line_res, count
-capture, grey, neg, line, hsv, switch, line_res, count = 0,0,0,0,0,1,0,0
+global capture, grey, switch, neg, line, hsv, check
+capture, grey, neg, line, hsv, switch = 0,0,0,0,0,1,
 
 # W_View_size = 320
 # H_View_size = 240
 # FPS = 80
-
-# HSV
-# lower_yellow = np.array([10, 88, 215])
-# upper_yellow = np.array([33, 255, 255])
-
-# YCbCr
-lower_yellow = np.array([0, 0, 0])
-upper_yellow = np.array([255, 255, 93])
 
 filename = cfg.TESTDATA_PATH+'/tts.mp3'
 
@@ -104,123 +93,9 @@ def text_test(msg):
     time.sleep(2)
     pibo.clear_display()
 
-def move_line(res):
-    # global line_res
-    global count
-    print('line_res in move_line =', res)
-
-    if res == 0:
-        count = 0
-
-    elif res == 'straight':
-        ret = pibo.set_motion('walk_je', 2)
-        print(ret)
-        time.sleep(1)
-        count = 0
-        print('line_res in straight =', res)
-    
-    elif res == 'corner':
-        ret = pibo.set_motion('turn_je3', 1)
-        print(ret)
-        time.sleep(1)
-        count = 0
-        print('line_res in corner =', res)
-
-    return
-
-# async def move_line_async(line_res):
-#     await asyncio.wait(move_line(line_res))
-
-def move_line_thread(line_res):
-    global count
-    res = 0
-    if count == 0 :
-        res = line_res
-        count = 1
-        t = Thread(target=move_line, args=(res,))
-        t.daemon = True # main 종료시 종료
-        t.start()
-        print('thread start')
-        # t.join() # 서브 스레드가 일하는 동안 메인 스레드는 stop, sub 스레드 완료 후 main이 실행됨
-    
-
-def detect_line(frame):
-    global line_res
-
-    frame = frame[300:480, 100:500]
-
-    # pibo.motor(5, 25, 100, 10)
-    blur = cv2.GaussianBlur(frame, (3, 3), 0)
-    # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    ycbcr = cv2.cvtColor(frame, cv2.COLOR_BGR2YCR_CB)
-    mask_yellow = cv2.inRange(ycbcr, lower_yellow, upper_yellow)
-    kernel = np.ones((5, 5), np.uint8)
-    binary_line_dil = cv2.dilate(mask_yellow, kernel, iterations=2)
-
-    pixels = cv2.countNonZero(mask_yellow)
-    #print(pixels)
-
-    if pixels < 500:
-        return frame
-
-    contours, hierarchy = cv2.findContours(binary_line_dil, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    max_contour = None
-    max_area = -1
-
-    for contour in contours:
-        area = cv2.contourArea(contour)
-        if area > max_area:
-            max_area = area
-            max_contour = contour
-
-    if len(max_contour) <= 0:
-        line_res = 0
-        return frame
-
-    yellowbox = cv2.minAreaRect(max_contour)
-    (x, y), (w, h), ang = yellowbox
-
-    if w > h:
-        ang = ang + 90
-
-    ang = int(ang)
-    box = cv2.boxPoints(yellowbox)
-    box = np.int0(box)
-    
-    #print('w= {}, h={}'.format(w, h))
-    # print('x= {}, y={}'.format(x, y))
-    # print('angle={}'.format(ang))
-    # print('x-w/2 ={}, y-h/2={}'.format(x-w/2, y-h/2))
-
-    if w < 80 or h < 80 :
-        line_res = "straight" # straight
-        
-        # print("A")
-        # ret = pibo.set_motion('walk_je2', 5)
-        # print("B")
-        
-    else:
-        line_res = "corner" # corner
-        #ret = pibo.set_motion('init_je', 1)
-
-    cv2.circle(frame, (int(x), int(y)), 3, (255, 0, 0), 10)
-    # cv2.circle(frame, (int(x-w/2), int(y-h/2)), 3, (0, 0, 255), 10)
-    cv2.drawContours(frame, [box], 0, (0, 0, 255), 3)
-
-    # pibo.putText(frame, line, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-    # pibo.camera.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), size=0.5)
-    # cv2.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255))
-
-    cv2.putText(frame, str(ang), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-    cv2.putText(frame, line_res, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-
-    #frame = cv2.flip(frame, 1) # 1은 좌우 반전, 0은 상하 반전
-    #print('line_res_in_function = ', line_res)
-    return frame
 
 def gen_frames():  # generate frame by frame from camera
-    global capture, line_res
+    global capture
 
     while True:
 
@@ -232,6 +107,7 @@ def gen_frames():  # generate frame by frame from camera
             if(line): 
                 frame = detect_line(frame)
                 #print('라인트레이싱 시작')
+                line_res = func_line_res()
                 move_line_thread(line_res)
 
             if(grey):
@@ -309,12 +185,12 @@ if (__name__ == '__main__'):
     ret = pibo.eye_on('white','white')
     # print('start check device')
 
-    ret = pibo.set_motion('init_je', 1)
+    ret = pibo.set_motion('start_je', 1)
     print(ret)
     time.sleep(5)  
 
-    print('start check device')
-    device_thread()
+    # print('start check device')
+    # device_thread()
 
     # ret = pibo.set_motion('walk_je', 2)
     # print(ret)
