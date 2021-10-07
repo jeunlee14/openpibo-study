@@ -39,16 +39,24 @@ mode = 'line'
 
 def move_line(res):
     # global line_res
-    global line_count, white, corner, mode
+    global line_count, white, corner, mode, white_count
+    print('white = {}, corner = {}, mode = {}'.format(white, corner, mode))
     print('line_res in move_line =', res)
 
     if res == 0:
         line_count = 0
 
     elif res == 'straight':
-        #ret = pibo.set_motion('walk_je', 2)
-        #print(ret)
-        time.sleep(3)
+        if mode == 'TrafficLight':
+            mode = 'line'
+            white_count = 0
+            white = 0           
+            ret = pibo.set_motion('start_je', 1)
+            print(ret)
+
+            #ret = pibo.set_motion('walk_je', 2)
+            #print(ret)
+            time.sleep(3)
         
         print('line_res in straight =', res)
 
@@ -60,7 +68,8 @@ def move_line(res):
             #ret = pibo.set_motion('walk_je', 5)
             print('고개 들기')
             ret = pibo.set_motion('init_je', 1)
-            print('신호등 모드')
+            print('신호등 모드') 
+            line_count = 1
         
         else:
             print('직진')
@@ -81,6 +90,26 @@ def move_line(res):
         time.sleep(3)
         line_count = 0
 
+    elif res == 'turn':
+        print('line_res in straight =', res)
+        mode = 'line'
+        white_count = 0
+        white = 0
+        print('회전하기')
+        time.sleep(3)
+        line_count = 0
+    
+    elif res == 'wait':
+        print('line_res in straight =', res)
+        print('대기하기')
+        time.sleep(3)
+        line_count = 0
+    
+    elif res == 'stop':
+        print('line_res in straight =', res)
+        print('정지하기')
+        time.sleep(3)
+        line_count = 0
     return
 
 # async def move_line_async(line_res):
@@ -136,7 +165,7 @@ def Linetracing(frame):
                 box = np.int0(box)
             
                 cv2.drawContours(frame, [box], 0, (255, 0, 0), 3)
-                #print('흰색')
+                print('흰색')
                 white_count += 1
 
                 if white_count < 2:
@@ -222,18 +251,21 @@ def Linetracing(frame):
         result = cv2.bitwise_and(frame, frame, mask=traffic)
 
         if pixels_red > 100:
-            print('정지')
+            #print('정지')
+            line_res = 'stop'
         
         elif pixels_yellow> 100:
-            print('대기')
+            #print('대기')
+            line_res = 'wait'
 
         elif pixels_green> 100:
             # 화살표 구분
             if corner == 1:
-                print('회전')
+                #print('회전')
+                line_res = 'turn'
             else:
-                print('직진')     
-
+                #print('직진')   
+                line_res = 'straight'  
 
         return result
         # mask_white = cv2.inRange(ycbcr, lower_red, upper_red)
