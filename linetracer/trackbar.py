@@ -73,7 +73,11 @@ def gen_frames():  # generate frame by frame from camera
             frame = cv2.flip(frame, -1)
             YCrCb = cv2.cvtColor(frame, cv2.COLOR_BGR2YCR_CB)
             Gmask = cv2.inRange(YCrCb, lower, higher)
-            # print('lower = {}, higher = {} in gen_frame'.format(lower, higher))
+            # 실시간으로 변경되는지 
+            # 전역변수 쓸때 값이 바뀐다 -> 충돌가능성,,,,,
+            # 서버 죽는 이유,,
+
+            print('lower = {}, higher = {} in gen_frame'.format(lower, higher))
 
             frame_mask = cv2.bitwise_and(frame, frame, mask=Gmask)
 

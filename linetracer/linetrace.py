@@ -54,8 +54,9 @@ def move_line(res):
 
         if white == 1:
             print('직진 후 정지')
+            
+            time.sleep(5)
             mode = 'TrafficLight'
-            time.sleep(3)
             #ret = pibo.set_motion('walk_je', 5)
             print('고개 들기')
             ret = pibo.set_motion('init_je', 1)
@@ -88,6 +89,9 @@ def move_line(res):
 def move_line_thread(line_res):
     global line_count
     res = 0
+    # rock check moveline thread 돌고있으면 체크 안하게 
+    # thread들어갈때 rock 나갈때 풀고 그때마다 rock체크
+
     if line_count == 0 :
         res = line_res
         line_count = 1
