@@ -212,4 +212,4 @@ if (__name__ == '__main__'):
     # ret = pibo.set_motion('left', 1)
     # ret = pibo.set_motion('walk_je', 4)
 
-    app.run(host='192.168.1.242')
+    app.run(host='192.168.35.244')

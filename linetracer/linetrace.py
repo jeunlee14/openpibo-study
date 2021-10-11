@@ -28,8 +28,8 @@ upper_red = np.array([255, 255, 255])
 lower_yellow = np.array([0, 0, 0])
 upper_yellow = np.array([255, 255, 100])
 
-lower_white = np.array([240, 0, 119])
-upper_white = np.array([255, 128, 124])
+lower_white = np.array([92, 0, 96])
+upper_white = np.array([255, 112, 255])
 # lower_white = np.array([240, 0, 0])
 # upper_white = np.array([255, 255, 255])
 
@@ -54,8 +54,8 @@ def move_line(res):
             ret = pibo.set_motion('start_je', 1)
             print(ret)
 
-            #ret = pibo.set_motion('walk_je', 2)
-            #print(ret)
+            ret = pibo.set_motion('walk_je', 2)
+            print(ret)
             time.sleep(3)
         
         print('line_res in straight =', res)
@@ -65,7 +65,7 @@ def move_line(res):
             
             time.sleep(5)
             mode = 'TrafficLight'
-            #ret = pibo.set_motion('walk_je', 5)
+            ret = pibo.set_motion('walk_je', 10)
             print('고개 들기')
             ret = pibo.set_motion('init_je', 1)
             print('신호등 모드') 
@@ -74,7 +74,7 @@ def move_line(res):
         else:
             print('직진')
             time.sleep(3)
-            #ret = pibo.set_motion('walk_je', 2)
+            ret = pibo.set_motion('walk_je', 2)
 
         line_count = 0
     
