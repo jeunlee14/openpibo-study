@@ -3,6 +3,7 @@ import numpy as np
 from threading import Thread
 import datetime, time
 import os, sys
+from video2 import speak
 
 # 상위 디렉토리 추가 (for utils.config)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -48,6 +49,7 @@ def move_line(res):
 
     elif res == 'straight':
         if mode == 'TrafficLight':
+            speak('초록불 다시 라인모드로 돌아갑니다.')
             mode = 'line'
             white_count = 0
             white = 0           
@@ -61,18 +63,22 @@ def move_line(res):
         print('line_res in straight =', res)
 
         if white == 1:
+            speak('흰색을 발견했습니다.')
             print('직진 후 정지')
             
             time.sleep(5)
-            mode = 'TrafficLight'
+            
             ret = pibo.set_motion('walk_je', 10)
+            speak("신호등 모드입니다. 고개를 들겠습니다")
             print('고개 들기')
             ret = pibo.set_motion('init_je', 1)
             print('신호등 모드') 
+            mode = 'TrafficLight'
             line_count = 1
         
         else:
             print('직진')
+            speak("흰색 없습니다. 직진하겠습니다.")
             time.sleep(3)
             ret = pibo.set_motion('walk_je', 2)
 
@@ -80,12 +86,14 @@ def move_line(res):
     
     elif res == 'go right':
         print('line_res in straight =', res)
+        speak('오른쪽으로 갑니다.')
         print('오른쪽으로 가기')
         time.sleep(3)
         line_count = 0
 
     elif res == 'go left':
         print('line_res in straight =', res)
+        speak('왼쪽으로 갑니다.')
         print('왼쪽으로 가기')
         time.sleep(3)
         line_count = 0
@@ -95,12 +103,14 @@ def move_line(res):
         mode = 'line'
         white_count = 0
         white = 0
+        speak('코너입니다 회전합니다.')
         print('회전하기')
         time.sleep(3)
         line_count = 0
     
     elif res == 'wait':
         print('line_res in straight =', res)
+        print('노란불 대기중')
         print('대기하기')
         time.sleep(3)
         line_count = 0
@@ -108,6 +118,7 @@ def move_line(res):
     elif res == 'stop':
         print('line_res in straight =', res)
         print('정지하기')
+        print('빨간불 정지중')
         time.sleep(3)
         line_count = 0
     return
