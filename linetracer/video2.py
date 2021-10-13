@@ -13,8 +13,8 @@ sys.path.append(cfg.OPENPIBO_PATH + '/edu')
 #from pibo_control import Pibo_Control
 from pibo import Edu_Pibo
 
-global capture, grey, switch, ycbcr, line, hsv, check
-capture, grey, ycbcr, line, hsv, switch = 0,0,0,0,0,1,
+global capture, switch, line, check
+capture, line, switch = 0,0,1,
 
 # W_View_size = 320
 # H_View_size = 240
@@ -107,26 +107,25 @@ def gen_frames():  # generate frame by frame from camera
             
             if(line):   
                 frame = Linetracing(frame)
-                #print('라인트레이싱 시작')
                 line_res = func_line_res()
                 move_line_thread(line_res)
 
-            if(grey):
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # if(grey):
+            #     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            if(ycbcr):
-                lower = np.array([235, 0, 0])
-                upper = np.array([255, 255, 255])
+            # if(ycbcr):
+            #     lower = np.array([235, 0, 0])
+            #     upper = np.array([255, 255, 255])
 
-                blur = cv2.GaussianBlur(frame, (3, 3), 0)
+            #     blur = cv2.GaussianBlur(frame, (3, 3), 0)
 
-                bgr2ycbcr = cv2.cvtColor(frame, cv2.COLOR_BGR2YCR_CB)
-                kernel = np.ones((5, 5), np.uint8)
+            #     bgr2ycbcr = cv2.cvtColor(frame, cv2.COLOR_BGR2YCR_CB)
+            #     kernel = np.ones((5, 5), np.uint8)
 
-                mask = cv2.inRange(bgr2ycbcr, lower, upper)
-                mask = cv2.dilate(mask, kernel, iterations=2)
-                frame = mask
-                # frame=cv2.bitwise_not(frame)
+            #     mask = cv2.inRange(bgr2ycbcr, lower, upper)
+            #     mask = cv2.dilate(mask, kernel, iterations=2)
+            #     frame = mask
+            #     # frame=cv2.bitwise_not(frame)
 
             if(capture):
                 capture=0
@@ -161,12 +160,12 @@ def tasks():
         if request.form.get('capture') == 'Capture':
             global capture
             capture=1
-        elif  request.form.get('grey') == 'Grey':
-            global grey
-            grey=not grey
-        elif  request.form.get('ycbcr') == 'ycbcr':
-            global ycbcr
-            ycbcr=not ycbcr
+        # elif  request.form.get('grey') == 'Grey':
+        #     global grey
+        #     grey=not grey
+        # elif  request.form.get('ycbcr') == 'ycbcr':
+        #     global ycbcr
+        #     ycbcr=not ycbcr
         elif  request.form.get('line') == 'Linetracing':
             global line
             if line == 0:
@@ -194,13 +193,31 @@ if (__name__ == '__main__'):
     ret = pibo.set_motion('init_je', 1)
     print(ret)  
 
-    # time.sleep(3)
+    time.sleep(5)
+    #start = time.time()
 
-    # ret = pibo.set_motion('walk_je_2', 3)
+
+    #ret = pibo.set_motion('walk_je_3', 3)
+    #print(ret)
+
+    #time.sleep(1)
+
+    #ret = pibo.set_motion('walkstop_je', 1)
+    #print(ret)
+
+    
+    #print('time: ', time.time() - start)
+
+    # ret = pibo.set_motion('forward1', 2)
     # print(ret)
 
-    # time.sleep(1)
-    # ret = pibo.set_motion('walkstop_je', 1)
+    # time.sleep(3)
+
+    # ret = pibo.set_motion('forward2', 2)
+    # print(ret)
+
+    # time.sleep(3)
+    # ret = pibo.set_motion('left', 2)
     # print(ret)
     speak("데모를 시작하겠습니다.")
     app.run(host='192.168.35.93')
