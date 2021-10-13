@@ -62,7 +62,7 @@ def move_line(res):
             ret = pibo.set_motion('start_je', 1)
             print(ret)
 
-            ret = pibo.set_motion('walk_je_3', 1)
+            ret = pibo.set_motion('walk_je_7', 5)
             print(ret)
             time.sleep(3)
         
@@ -73,12 +73,12 @@ def move_line(res):
             speak('흰색을 발견했습니다.')
             print('직진 후 정지')
             
-            time.sleep(5)
+            time.sleep(3)
             
-            #ret = pibo.set_motion('walk_je_3', 1)
+            ret = pibo.set_motion('walk_je_7', 5)
             # time.sleep(1)
             # ret = pibo.set_motion('walkstop_je', 1)
-            # print(ret)
+            print(ret)
             white = 0     
             white_count =0
             speak("신호등 모드입니다. 고개를 들겠습니다")
@@ -93,11 +93,11 @@ def move_line(res):
         else:
             print('직진')
             speak("흰색 없습니다. 직진하겠습니다.")
-            time.sleep(3)
-            #ret = pibo.set_motion('walk_je_3', 1)
+            time.sleep(2)
+            ret = pibo.set_motion('walk_je_7', 5)
             # time.sleep(1)
             # ret = pibo.set_motion('walkstop_je', 1)
-            # print(ret)
+            print(ret)
 
         line_count = 0
     
@@ -154,7 +154,7 @@ def move_line(res):
 def move_line_thread(line_res):
     global line_count, thread_count, white_count
     if thread_count == 0 :
-        time.sleep(3)
+        time.sleep(1)
         thread_count =1
     
     res = 0
@@ -194,7 +194,11 @@ def Linetracing(frame):
         h,s,v = cv2.split(hsv)
         mask_white = cv2.inRange(ycbcr, lower_white, upper_white)
         white_line = cv2.dilate(mask_white, kernel, iterations=2)
-        pixels_white = cv2.countNonZero(mask_white)
+
+        cv2.rectangle(frame, (150,20), (250,180) ,(255, 255, 0), 3)
+
+        white_line2 = white_line[20:180, 150:250]
+        pixels_white = cv2.countNonZero(white_line2)
 
         if 500 < pixels_white:
 
@@ -294,11 +298,11 @@ def Linetracing(frame):
 
         mask_red = cv2.inRange(ycbcr, lower_red, upper_red)
         red_frame = cv2.dilate(mask_red, kernel, iterations=2)
-        red_frame2 = red_frame [40:130, 200:400]
+        red_frame2 = red_frame [40:130, 100:300]
 
         mask_green = cv2.inRange(ycbcr, lower_green, upper_green)
         green_frame = cv2.dilate(mask_green, kernel, iterations=2)
-        green_frame2 = green_frame [40:130, 200:400]
+        green_frame2 = green_frame[40:130, 100:300]
 
         pixels_green = cv2.countNonZero(green_frame2)
         pixels_red= cv2.countNonZero(red_frame2)
@@ -307,6 +311,7 @@ def Linetracing(frame):
         traffic = cv2.bitwise_or(yellow_line, green_frame)
         traffic = cv2.bitwise_or(traffic, red_frame)
         result = cv2.bitwise_and(frame, frame, mask=traffic)
+        
         line_res = 0
         if pixels_red > 100:
             #print('정지')
