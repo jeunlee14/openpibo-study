@@ -46,7 +46,7 @@ def decode(text):
     result = '파이보가 명령어를 제대로 이해하지 못했어요.'
     print(f'input text : {text}')
     if text != None:
-        if text.find('라인') > -1  or text.find('나인') > -1 or text.find('9') > -1 :
+        if text.find('라인') > -1  or text.find('나인') > -1 or text.find('9') > -1 or text.find('라이') > -1 :
             pibo.stop_devices()
             result = '라인트레이싱을 시작하겠습니다.'
             if line == 0:
@@ -64,7 +64,6 @@ def msg_device(msg):
     check = msg.split(':')[1]
 
     if check.find('touch') > -1:
-        speak('무엇을 도와드릴까요?')
         ret_text = pibo.stt()
         ret = decode(ret_text['data'])
         speak(ret)
@@ -213,6 +212,9 @@ if (__name__ == '__main__'):
     # print(ret)
 
     # time.sleep(3)
+    print('start check device')
+    device_thread()
+
 
     # ret = pibo.set_motion('forward2', 2)
     # print(ret)
@@ -234,8 +236,6 @@ if (__name__ == '__main__'):
     # print(ret)
     # time.sleep(5)  
 
-    # print('start check device')
-    # device_thread()
 
     # ret = pibo.set_motion('walk_je', 5)
     #ret = pibo.set_motion('start_je', 1)
