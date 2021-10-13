@@ -290,7 +290,7 @@ def Linetracing(frame):
         # 400,180
 
         cv2.rectangle(frame, (100,40), (300,130) ,(255, 255, 0), 3)
-        yellow_line_2 = yellow_line[40:130, 200:400]
+        yellow_line_2 = yellow_line[40:130, 100:300]
 
         mask_red = cv2.inRange(ycbcr, lower_red, upper_red)
         red_frame = cv2.dilate(mask_red, kernel, iterations=2)
