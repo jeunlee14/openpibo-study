@@ -38,8 +38,8 @@ if (__name__ == '__main__'):
 
     time.sleep(1)
 
-    ret = pibo.set_motion('walk_je_7', 4)
-    print(ret)
+    # ret = pibo.set_motion('walk_je_7', 4)
+    # print(ret)
 
     
     #print('time: ', time.time() - start)
@@ -53,7 +53,10 @@ if (__name__ == '__main__'):
     # print(ret)
 
     # time.sleep(3)
-    # ret = pibo.set_motion('left', 2)
+    ret = pibo.set_motion('left_je', 2)
+
+    time.sleep(3)
+    ret = pibo.set_motion('start_je', 1)
     # print(ret)
 
 
