@@ -3,7 +3,6 @@ import numpy as np
 from threading import Thread
 import datetime, time
 import os, sys
-from video2 import speak
 
 # 상위 디렉토리 추가 (for utils.config)
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -11,6 +10,7 @@ from utils.config import Config as cfg
 
 sys.path.append(cfg.OPENPIBO_PATH + '/edu')
 
+filename = cfg.TESTDATA_PATH+'/tts.mp3'
 #from pibo_control import Pibo_Control
 from pibo import Edu_Pibo
 pibo = Edu_Pibo()
@@ -37,6 +37,12 @@ upper_white = np.array([255, 112, 255])
 global line_res, line_count, white_count, white, corner, mode
 line_res, line_count, white_count, white, corner,  = 0, 0, 0, 0, 0
 mode = 'line'
+
+def speak(_text):
+    voice = '<speak><voice name="WOMAN_READ_CALM">{}<break time="500ms"/></voice></speak>'.format(_text)
+    ret_voice = pibo.tts('{}'.format(voice), filename)
+    #eye_color_thread()
+    pibo.play_audio(filename, out='local', background=True, volume=-1500) 
 
 def move_line(res):
     # global line_res
@@ -68,7 +74,11 @@ def move_line(res):
             
             time.sleep(5)
             
-            ret = pibo.set_motion('walk_je', 10)
+            ret = pibo.set_motion('walk_je_2', 3)
+            time.sleep(1)
+            ret = pibo.set_motion('walkstop_je', 1)
+            print(ret)
+            
             speak("신호등 모드입니다. 고개를 들겠습니다")
             print('고개 들기')
             ret = pibo.set_motion('init_je', 1)
@@ -80,7 +90,10 @@ def move_line(res):
             print('직진')
             speak("흰색 없습니다. 직진하겠습니다.")
             time.sleep(3)
-            ret = pibo.set_motion('walk_je', 2)
+            ret = pibo.set_motion('walk_je_2', 3)
+            time.sleep(1)
+            ret = pibo.set_motion('walkstop_je', 1)
+            print(ret)
 
         line_count = 0
     

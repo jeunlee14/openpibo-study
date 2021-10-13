@@ -191,22 +191,35 @@ def tasks():
     return render_template('video2.html')
 
 if (__name__ == '__main__'):
+    ret = pibo.set_motion('init_je', 1)
+    print(ret)  
+
+    # time.sleep(3)
+
+    # ret = pibo.set_motion('walk_je_2', 3)
+    # print(ret)
+
+    # time.sleep(1)
+    # ret = pibo.set_motion('walkstop_je', 1)
+    # print(ret)
+    speak("데모를 시작하겠습니다.")
+    app.run(host='192.168.35.93')
     # ret = pibo.eye_on('green','green')
     #ret = pibo.eye_on('blue','red')
 
 
-    ret = pibo.eye_on('white','white')
+    # ret = pibo.eye_on('white','white')
     # print('start check device')
 
     #ret = pibo.set_motion('start_je', 1)
-    ret = pibo.set_motion('init_je', 1)
-    print(ret)
-    time.sleep(5)  
+    # ret = pibo.set_motion('init_je', 1)
+    # print(ret)
+    # time.sleep(5)  
 
-    print('start check device')
-    device_thread()
+    # print('start check device')
+    # device_thread()
 
-    ret = pibo.set_motion('walk_je', 5)
+    # ret = pibo.set_motion('walk_je', 5)
     #ret = pibo.set_motion('start_je', 1)
     #ret = pibo.set_motion('init_je', 1)
     #ret = pibo.set_motion('start_je', 5)
@@ -217,4 +230,4 @@ if (__name__ == '__main__'):
     # ret = pibo.set_motion('left', 1)
     # ret = pibo.set_motion('walk_je', 4)
 
-    app.run(host='192.168.35.93')
+ 
