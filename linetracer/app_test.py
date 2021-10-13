@@ -53,10 +53,12 @@ if (__name__ == '__main__'):
     # print(ret)
 
     # time.sleep(3)
-    ret = pibo.set_motion('left_je', 2)
+    ret = pibo.set_motion('walk_je_2', 1) # 길게
 
     time.sleep(3)
-    ret = pibo.set_motion('start_je', 1)
+    ret = pibo.set_motion('walkstop_je', 1)
+
+    #ret = pibo.set_motion('walk_je_7', 3) # 짧게
     # print(ret)
 
 
