@@ -220,7 +220,7 @@ if (__name__ == '__main__'):
     # time.sleep(3)
     # ret = pibo.set_motion('left', 2)
     # print(ret)
-    speak("데모를 시작하겠습니다.")
+    speak("서버를 시작하겠습니다.")
     app.run(host='192.168.35.93')
     # ret = pibo.eye_on('green','green')
     #ret = pibo.eye_on('blue','red')

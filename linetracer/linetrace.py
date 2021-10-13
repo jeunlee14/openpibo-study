@@ -38,6 +38,9 @@ global line_res, line_count, white, corner, mode, thread_count, white_count
 line_res, line_count, white, corner, thread_count,white_count = 0, 0, 0, 0, 0, 0
 mode = 'line'
 
+ret = pibo.eye_on('yellow','yellow')
+print(ret)
+
 def speak(_text):
     voice = '<speak><voice name="WOMAN_READ_CALM">{}<break time="500ms"/></voice></speak>'.format(_text)
     ret_voice = pibo.tts('{}'.format(voice), filename)
@@ -55,13 +58,18 @@ def move_line(res):
 
     elif res == 'straight':
         if mode == 'TrafficLight':
+            ret = pibo.eye_on('green','green')
+            print(ret)
             speak('초록불 직진합니다.')
             mode = 'line'
 
             corner = 0      
             ret = pibo.set_motion('start_je', 1)
             print(ret)
-  
+
+            ret = pibo.eye_on('yellow','yellow')
+            print(ret)
+
             ret = pibo.set_motion('walk_je_2', 3)
             print(ret)
             time.sleep(1)
@@ -74,6 +82,8 @@ def move_line(res):
         if white == 1:
             line_count = 1
             speak('정지선을 발견했습니다.')
+            ret = pibo.eye_on('white','white')
+            print(ret)
             print('직진 후 정지')
             
             time.sleep(3)
@@ -90,6 +100,7 @@ def move_line(res):
             white = 0     
             white_count =0
             speak("신호등 모드입니다. 고개를 들겠습니다.")
+            
             print('고개 들기')
             ret = pibo.set_motion('init_je', 1)
             print('신호등 모드') 
@@ -131,11 +142,19 @@ def move_line(res):
         time.sleep(3)
         line_count = 0
 
-    elif res == 'turn':
+    elif res == 'corner':
         print('line_res in straight =', res)
         mode = 'line'
         white = 0
         speak('초록불 좌회전 코너 회전합니다.')
+        ret = pibo.eye_on('green','green')
+
+        ret = pibo.set_motion('walk_je_2', 1)
+        print(ret)
+        time.sleep(1)
+        ret = pibo.set_motion('walkstop_je', 1)
+        ret = pibo.eye_on('green','green')
+        print(ret)
         print('회전하기')
         time.sleep(3)
         ret = pibo.set_motion('left_je', 2)
@@ -144,8 +163,10 @@ def move_line(res):
         print(ret)
         line_count = 0
     
-    elif res == 'wait'
+    elif res == 'wait':
         print('line_res in straight =', res)
+        ret = pibo.eye_on('yellow','yellow')
+        print(ret)
         speak('노란불 대기합니다.')
         print('대기하기')
         time.sleep(3)
@@ -153,6 +174,8 @@ def move_line(res):
     
     elif res == 'stop':
         print('line_res in straight =', res)
+        ret = pibo.eye_on('red','red')
+        print(ret)
         print('정지하기')
         speak('빨간불 정지합니다.')
         time.sleep(3)
@@ -225,11 +248,12 @@ def Linetracing(frame):
                 box = np.int0(box)
             
                 cv2.drawContours(frame, [box], 0, (255, 0, 0), 3)
-                # print('흰색')
+                
                 
                 white_count += 1
                 if white_count > 5:
                     white = 1
+                    print('흰색')
 
             except Exception as e:
                 pass
@@ -271,16 +295,19 @@ def Linetracing(frame):
 
         if 60 < x <= 360:
             line_res = 'straight'
+            line_str = 'straight'
         
         elif x > 360:
             line_res = 'go right'
-        
+            line_str = 'go right'
         else:
             line_res = 'go left'
+            line_str = 'go left'
 
         if w > 80 and h > 80 :
-            
-            print('코너인식')
+
+            line_str = 'corner'
+
             corner = 1
 
             
@@ -294,7 +321,7 @@ def Linetracing(frame):
         # cv2.putText(frame, "{} \n angle = {}".format(line, str(ang)), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255))
 
         # cv2.putText(frame, str(ang), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.putText(frame, line_res, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+        cv2.putText(frame, line_str, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
 
         #frame = cv2.flip(frame, 1) # 1은 좌우 반전, 0은 상하 반전
         #print('line_res_in_function = ', line_res)
@@ -327,6 +354,7 @@ def Linetracing(frame):
         line_res = 0
         if pixels_red > 100:
             #print('정지')
+            
             line_res = 'stop'
         
         elif pixels_yellow> 100:
@@ -337,7 +365,7 @@ def Linetracing(frame):
             # 화살표 구분
             if corner == 1:
                 #print('회전')
-                line_res = 'turn'
+                line_res = 'corner'
             else:
                 #print('직진')   
                 line_res = 'straight'  
