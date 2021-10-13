@@ -61,8 +61,11 @@ def move_line(res):
             corner = 0      
             ret = pibo.set_motion('start_je', 1)
             print(ret)
-
-            ret = pibo.set_motion('walk_je_7', 5)
+  
+            ret = pibo.set_motion('walk_je_2', 3)
+            print(ret)
+            time.sleep(1)
+            ret = pibo.set_motion('walkstop_je', 1)
             print(ret)
             time.sleep(3)
         
@@ -75,7 +78,7 @@ def move_line(res):
             
             time.sleep(3)
             
-            ret = pibo.set_motion('walk_je_7', 5)
+            ret = pibo.set_motion('walk_je_7', 5) #느리게 걷기
             # time.sleep(1)
             # ret = pibo.set_motion('walkstop_je', 1)
             print(ret)
@@ -94,7 +97,11 @@ def move_line(res):
             print('직진')
             speak("흰색 없습니다. 직진하겠습니다.")
             time.sleep(2)
-            ret = pibo.set_motion('walk_je_7', 5)
+            ret = pibo.set_motion('walk_je_2', 3)
+            print(ret)
+            time.sleep(1)
+            ret = pibo.set_motion('walkstop_je', 1)
+            print(ret)
             # time.sleep(1)
             # ret = pibo.set_motion('walkstop_je', 1)
             print(ret)

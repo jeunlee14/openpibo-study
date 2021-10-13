@@ -175,6 +175,7 @@ def tasks():
             else:
                 line = 0
                 ret = pibo.set_motion('init_je', 1)
+                speak('라인트레이싱을 종료하겠습니다.')
                 print(ret)
 
         elif  request.form.get('stop') == 'Stop/Start':
