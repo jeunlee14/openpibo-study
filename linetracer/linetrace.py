@@ -287,8 +287,9 @@ def Linetracing(frame):
     elif mode == 'TrafficLight':
         # print('신호등 모드')
         # frame = frame[300:480, 100:500]
+        # 400,180
 
-        cv2.rectangle(frame, (200,40), (400,130) ,(255, 255, 0), 3)
+        cv2.rectangle(frame, (100,40), (300,130) ,(255, 255, 0), 3)
         yellow_line_2 = yellow_line[40:130, 200:400]
 
         mask_red = cv2.inRange(ycbcr, lower_red, upper_red)
