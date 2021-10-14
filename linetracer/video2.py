@@ -223,7 +223,7 @@ if (__name__ == '__main__'):
     # ret = pibo.set_motion('left', 2)
     # print(ret)
     speak("서버를 시작하겠습니다.")
-    app.run(host='192.168.35.93')
+    app.run(host='192.168.1.242')
     # ret = pibo.eye_on('green','green')
     #ret = pibo.eye_on('blue','red')
 

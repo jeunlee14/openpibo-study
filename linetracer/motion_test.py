@@ -20,29 +20,27 @@ def speak(_text):
     voice = '<speak><voice name="WOMAN_READ_CALM">{}<break time="500ms"/></voice></speak>'.format(_text)
     ret_voice = pibo.tts('{}'.format(voice), filename)
     #eye_color_thread()
-    pibo.play_audio(filename, out='local', background=True, volume=-1500) 
+    pibo.play_audio(filename, out='local', background=True, volume=-1500) # 낮아질수록 작아짐 
 
 
 if (__name__ == '__main__'):
 
-    speak("데모를 시작하겠습니다.")
+    # speak("데모를 시작하겠습니다.")
     ret = pibo.set_motion('init_je', 1)
     print(ret)  
 
     time.sleep(5)
-    #start = time.time()
-
-
-    # ret = pibo.set_motion('walk_je_3', 3)
-    # print(ret)
-
+    start = time.time()
+    ret = pibo.set_motion('walk_je_2', 1) # 길게
     time.sleep(1)
+    ret = pibo.set_motion('walkstop_je', 1)
+    print('time: ', time.time() - start)
 
-    # ret = pibo.set_motion('walk_je_7', 4)
-    # print(ret)
+    time.sleep(4)
 
-    
-    #print('time: ', time.time() - start)
+    start = time.time()
+    ret = pibo.set_motion('walk_je_7', 1) # 길게 짧게
+    print('time: ', time.time() - start)
 
     # ret = pibo.set_motion('forward1', 2)
     # print(ret)
@@ -53,10 +51,7 @@ if (__name__ == '__main__'):
     # print(ret)
 
     # time.sleep(3)
-    ret = pibo.set_motion('walk_je_2', 1) # 길게
 
-    time.sleep(3)
-    ret = pibo.set_motion('walkstop_je', 1)
 
     #ret = pibo.set_motion('walk_je_7', 3) # 짧게
     # print(ret)
