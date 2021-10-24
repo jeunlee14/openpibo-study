@@ -171,6 +171,9 @@ def tasks():
                 line = 1
                 ret = pibo.set_motion('start_je', 1)
                 print(ret)
+                speak('라인트레이싱을 시작하겠습니다.')
+                time.sleep(4)
+                
             else:
                 line = 0
                 ret = pibo.set_motion('init_je', 1)

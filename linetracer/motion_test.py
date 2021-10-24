@@ -31,15 +31,11 @@ if (__name__ == '__main__'):
 
     time.sleep(5)
     start = time.time()
-    ret = pibo.set_motion('go_left_je', 4) # 길게
+    ret = pibo.set_motion('go_right', 1) # 길게
     # time.sleep(1)
     # ret = pibo.set_motion('walkstop_je', 1)
-    print('time: ', time.time() - start)
-
-    # time.sleep(4)
-
-    # start = time.time()
-    # ret = pibo.set_motion('walk_je_7', 1) # 길게 짧게
+ 
+    # ret = pibo.set_motion('turn_right_je_small', 4) # 길게 짧게
     # print('time: ', time.time() - start)
 
     # ret = pibo.set_motion('forward1', 2)

@@ -59,7 +59,7 @@ def move_line(res):
     if res == 'go right':
         print('line_res in straight =', res)
         speak('오른쪽으로 갑니다.')
-        ret = pibo.set_motion('go_right_je', 2)
+        ret = pibo.set_motion('go_right_je_small', 4)
         print(ret)
         print('오른쪽으로 가기')
         line_count = 0
@@ -67,7 +67,7 @@ def move_line(res):
     elif res == 'go left':
         print('line_res in straight =', res)
         speak('왼쪽으로 갑니다.')
-        ret = pibo.set_motion('go_left_je', 4)
+        ret = pibo.set_motion('go_left_je_small', 4)
         print(ret)
         print('왼쪽으로 가기')
         line_count = 0
@@ -115,6 +115,12 @@ def move_line(res):
             ret = pibo.set_motion('walkstop_je', 1)
             
             ret = pibo.set_motion('walk_je_7', 5) #느리게 걷기
+            print(ret)
+
+            time.sleep(1) 
+            speak("오른쪽으로 갑니다.") ###여기 왜 안하자ㅣ????
+            ret = pibo.set_motion('go_right_je_small', 4)
+            print(ret)
         
             print(ret)
             speak("신호등 모드입니다. 고개를 들겠습니다.")
