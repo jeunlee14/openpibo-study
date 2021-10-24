@@ -45,7 +45,7 @@ def speak(_text):
     voice = '<speak><voice name="WOMAN_READ_CALM">{}<break time="500ms"/></voice></speak>'.format(_text)
     ret_voice = pibo.tts('{}'.format(voice), filename)
     #eye_color_thread()
-    pibo.play_audio(filename, out='local', background=True, volume=-1500) 
+    pibo.play_audio(filename, out='local', background=True, volume=-1000) 
 
 def move_line(res):
     # global line_res
@@ -64,45 +64,45 @@ def move_line(res):
             mode = 'line'
 
             corner = 0      
-            ret = pibo.set_motion('start_je', 1)
-            print(ret)
+            # ret = pibo.set_motion('start_je', 1)
+            # print(ret)
 
-            ret = pibo.eye_on('yellow','yellow')
-            print(ret)
+            # ret = pibo.eye_on('yellow','yellow')
+            # print(ret)
 
-            ret = pibo.set_motion('walk_je_2', 3)
-            print(ret)
-            time.sleep(1)
-            ret = pibo.set_motion('walkstop_je', 1)
-            print(ret)
-            time.sleep(3)
+            # ret = pibo.set_motion('walk_je_2', 3)
+            # print(ret)
+            # time.sleep(1)
+            # ret = pibo.set_motion('walkstop_je', 1)
+            # print(ret)
+            # time.sleep(3)
         
         print('line_res in straight =', res)
 
         if white == 1:
             line_count = 1
             speak('정지선을 발견했습니다.')
+            
             ret = pibo.eye_on('white','white')
             print(ret)
             print('직진 후 정지')
             
             time.sleep(3)
 
-            ret = pibo.set_motion('walk_je_2', 1)
-            print(ret)
-            time.sleep(1)
-            ret = pibo.set_motion('walkstop_je', 1)
-            
-            ret = pibo.set_motion('walk_je_7', 5) #느리게 걷기
+            # ret = pibo.set_motion('walk_je_2', 4)
+            # print(ret)
             # time.sleep(1)
             # ret = pibo.set_motion('walkstop_je', 1)
+            
+            # ret = pibo.set_motion('walk_je_7', 2) #느리게 걷기
+        
             print(ret)
             white = 0     
             white_count =0
             speak("신호등 모드입니다. 고개를 들겠습니다.")
             
             print('고개 들기')
-            ret = pibo.set_motion('init_je', 1)
+            # ret = pibo.set_motion('init_je', 1)
             print('신호등 모드') 
 
             time.sleep(2)
@@ -112,12 +112,12 @@ def move_line(res):
         else:
             print('직진')
             speak("정지선 없습니다. 직진하겠습니다.")
-            time.sleep(2)
-            ret = pibo.set_motion('walk_je_2', 3)
-            print(ret)
-            time.sleep(1)
-            ret = pibo.set_motion('walkstop_je', 1)
-            print(ret)
+            # time.sleep(2)
+            # ret = pibo.set_motion('walk_je_2', 3)
+            # print(ret)
+            # time.sleep(1)
+            # ret = pibo.set_motion('walkstop_je', 1)
+            # print(ret)
             # time.sleep(1)
             # ret = pibo.set_motion('walkstop_je', 1)
             print(ret)
@@ -127,8 +127,8 @@ def move_line(res):
     elif res == 'go right':
         print('line_res in straight =', res)
         speak('오른쪽으로 갑니다.')
-        ret = pibo.set_motion('go_right_je', 2)
-        print(ret)
+        # ret = pibo.set_motion('go_right_je', 2)
+        # print(ret)
         print('오른쪽으로 가기')
         time.sleep(3)
         line_count = 0
@@ -136,8 +136,8 @@ def move_line(res):
     elif res == 'go left':
         print('line_res in straight =', res)
         speak('왼쪽으로 갑니다.')
-        ret = pibo.set_motion('go_left_je', 2)
-        print(ret)
+        # ret = pibo.set_motion('go_left_je', 4)
+        # print(ret)
         print('왼쪽으로 가기')
         time.sleep(3)
         line_count = 0
@@ -149,18 +149,16 @@ def move_line(res):
         speak('초록불 좌회전 코너 회전합니다.')
         ret = pibo.eye_on('green','green')
 
-        ret = pibo.set_motion('walk_je_2', 1)
-        print(ret)
-        time.sleep(1)
-        ret = pibo.set_motion('walkstop_je', 1)
         ret = pibo.eye_on('green','green')
         print(ret)
-        print('회전하기')
-        time.sleep(3)
-        ret = pibo.set_motion('left_je', 2)
-        print(ret)
-        ret = pibo.set_motion('start_je', 1)
-        print(ret)
+
+        # ret = pibo.set_motion('walk_je_7', 3) #느리게 걷기
+        # print('회전하기')
+        # time.sleep(3)
+        # ret = pibo.set_motion('left_je', 2)
+        # print(ret)
+        # ret = pibo.set_motion('start_je', 1)
+        # print(ret)
         line_count = 0
     
     elif res == 'wait':
@@ -253,7 +251,7 @@ def Linetracing(frame):
                 white_count += 1
                 if white_count > 5:
                     white = 1
-                    print('흰색')
+                    #print('흰색')
 
             except Exception as e:
                 pass
@@ -288,28 +286,28 @@ def Linetracing(frame):
         box = cv2.boxPoints(yellowbox)
         box = np.int0(box)
         
-        # print('w= {}, h={}'.format(w, h))
-        # print('x= {}, y={}'.format(x, y))
-        # print('angle={}'.format(ang))
+        #print('w= {}, h={}'.format(w, h))
+        #print('x= {}, y={}'.format(x, y))
+        print('angle={}'.format(ang))
         # print('x-w/2 ={}, y-h/2={}'.format(x-w/2, y-h/2))
 
         if 60 < x <= 360:
             line_res = 'straight'
             line_str = 'straight'
         
-        elif x > 360:
+        elif x > 210:
             line_res = 'go right'
             line_str = 'go right'
         else:
             line_res = 'go left'
             line_str = 'go left'
 
-        if w > 80 and h > 80 :
+        if w > 180 and h > 110 :
 
             line_str = 'corner'
-
             corner = 1
 
+        print(f"라인 = {line_str}")
             
 
         # cv2.circle(frame, (int(x), int(y)), 3, (255, 0, 0), 10)
