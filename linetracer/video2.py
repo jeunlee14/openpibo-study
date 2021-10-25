@@ -217,8 +217,8 @@ if (__name__ == '__main__'):
     # time.sleep(3)
 
     #########################################
-    # print('start check device')
-    # device_thread()
+    print('start check device')
+    device_thread()
     #############################################
 
     # ret = pibo.set_motion('forward2', 2)
@@ -243,9 +243,9 @@ if (__name__ == '__main__'):
 
 
     # ret = pibo.set_motion('walk_je', 5)
-    #ret = pibo.set_motion('start_je', 1)
-    #ret = pibo.set_motion('init_je', 1)
-    #ret = pibo.set_motion('start_je', 5)
+    # ret = pibo.set_motion('start_je', 1)
+    # ret = pibo.set_motion('init_je', 1)
+    # ret = pibo.set_motion('start_je', 5)
 
     # print(ret)
     #ret = pibo.set_motion('turn_left_je3', 1)
