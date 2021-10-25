@@ -10,10 +10,12 @@ from utils.config import Config as cfg
 
 sys.path.append(cfg.OPENPIBO_PATH + '/edu')
 
-filename = cfg.TESTDATA_PATH+'/tts.mp3'
-#from pibo_control import Pibo_Control
 from pibo import Edu_Pibo
 pibo = Edu_Pibo()
+
+filename = cfg.TESTDATA_PATH+'/tts.mp3'
+#from pibo_control import Pibo_Control
+
 # HSV
 # lower_yellow = np.array([10, 88, 215])
 # upper_yellow = np.array([33, 255, 255])
@@ -38,6 +40,8 @@ global line_res, line_count, white, corner, mode, thread_count, white_count
 line_res, line_count, white, corner, thread_count,white_count = 0, 0, 0, 0, 0, 0
 mode = 'line'
 
+corner = 1
+white = 1
 ret = pibo.eye_on('yellow','yellow')
 print(ret)
 
@@ -50,8 +54,8 @@ def speak(_text):
 def move_line(res):
     # global line_res
     global line_count, white, corner, mode, white_count
-    print('white = {}, corner = {}, mode = {}'.format(white, corner, mode))
-    print('line_res in move_line =', res)
+    # print('white = {}, corner = {}, mode = {}'.format(white, corner, mode))
+    # print('line_res in move_line =', res)
 
     if res == 0:
         line_count = 0
@@ -102,27 +106,27 @@ def move_line(res):
         if white == 1:
             line_count = 1
             speak('정지선을 발견했습니다.')
+            time.sleep(5)
+            # ret = pibo.eye_on('white','white')
+            # print(ret)
+            # print('직진 후 정지')
             
-            ret = pibo.eye_on('white','white')
-            print(ret)
-            print('직진 후 정지')
-            
-            time.sleep(3)
+            # time.sleep(3)
 
-            ret = pibo.set_motion('walk_je_2', 5)
-            print(ret)
-            time.sleep(1)
-            ret = pibo.set_motion('walkstop_je', 1)
+            # ret = pibo.set_motion('walk_je_2', 5)
+            # print(ret)
+            # time.sleep(1)
+            # ret = pibo.set_motion('walkstop_je', 1)
             
-            ret = pibo.set_motion('walk_je_7', 5) #느리게 걷기
-            print(ret)
+            # ret = pibo.set_motion('walk_je_7', 5) #느리게 걷기
+            # print(ret)
 
-            time.sleep(1) 
-            speak("오른쪽으로 갑니다.") ###여기 왜 안하자ㅣ????
-            ret = pibo.set_motion('go_right_je_small', 4)
-            print(ret)
-        
-            print(ret)
+            # time.sleep(1) 
+            # # speak("오른쪽으로 갑니다.") ###여기 왜 안하자ㅣ????
+            # ret = pibo.set_motion('turn_left_je_big', 2)
+            # print(ret)
+            # print(ret)
+
             speak("신호등 모드입니다. 고개를 들겠습니다.")
             
             print('고개 들기')
@@ -142,9 +146,6 @@ def move_line(res):
             time.sleep(1)
             ret = pibo.set_motion('walkstop_je', 1)
             print(ret)
-            time.sleep(1)
-            ret = pibo.set_motion('walkstop_je', 1)
-            print(ret)
 
         line_count = 0
     
@@ -159,7 +160,14 @@ def move_line(res):
         ret = pibo.eye_on('green','green')
         print(ret)
 
+        ret = pibo.set_motion('walk_je_2', 3)
+        print(ret)
+        time.sleep(1)
+        ret = pibo.set_motion('walkstop_je', 1)
+        print(ret)
+
         ret = pibo.set_motion('walk_je_7', 3) #느리게 걷기
+        
         print('회전하기')
         time.sleep(3)
         ret = pibo.set_motion('left_je', 2)
@@ -210,7 +218,7 @@ def move_line_thread(line_res):
         t = Thread(target=move_line, args=(res,))
         t.daemon = True # main 종료시 종료
         t.start()
-        print('thread start')
+        # print('thread start')
         # t.join() # 서브 스레드가 일하는 동안 메인 스레드는 stop, sub 스레드 완료 후 main이 실행됨
     
 def Linetracing(frame):
@@ -295,9 +303,9 @@ def Linetracing(frame):
         box = cv2.boxPoints(yellowbox)
         box = np.int0(box)
         
-        print('w= {}, h={}'.format(w, h))
-        print('x= {}, y={}'.format(x, y))
-        print('angle={}'.format(ang))
+        #print('w= {}, h={}'.format(w, h))
+        #print('x= {}, y={}'.format(x, y))
+        #print('angle={}'.format(ang))
         # print('x-w/2 ={}, y-h/2={}'.format(x-w/2, y-h/2))
 
         if 60 < x <= 360:
@@ -385,7 +393,6 @@ def Linetracing(frame):
         # mask_yellow = cv2.inRange(ycbcr, lower_yellow, upper_yellow)
         # yellow_line = cv2.dilate(mask_yellow, kernel, iterations=2)
         # pixels_yellow = cv2.countNonZero(mask_yellow)
-
 
 def func_line_res():
     global line_res
